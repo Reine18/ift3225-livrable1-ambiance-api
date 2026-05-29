@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const deviceRoutes = require("./routes/deviceRoutes");
 
 const app = express();
 
@@ -14,5 +15,7 @@ app.get("/", (req, res) => {
     message: "IFT3225 API en ligne"
   });
 });
+
+app.use("/devices", deviceRoutes);
 
 module.exports = app;
