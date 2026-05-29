@@ -1,6 +1,5 @@
 const crypto = require("crypto");
-const Device = require("../models/Device");
-
+const { name, location } = req.body || {};
 // POST /devices
 const createDevice = async (req, res) => {
   try {
