@@ -2,6 +2,12 @@ const mongoose = require("mongoose");
 
 const observationSchema = new mongoose.Schema(
   {
+    deviceId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Device",
+      required: true,
+    },
+    
     location: {
       type: String,
       required: true,

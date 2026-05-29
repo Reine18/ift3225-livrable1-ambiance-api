@@ -1,6 +1,10 @@
 const express = require("express");
 const cors = require("cors");
+
 const deviceRoutes = require("./routes/deviceRoutes");
+const measurementRoutes = require("./routes/measurementRoutes");
+const observationRoutes = require("./routes/observationRoutes");
+
 
 const app = express();
 
@@ -38,5 +42,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/devices", deviceRoutes);
+app.use("/measurements", measurementRoutes);
+app.use("/observations", observationRoutes);
 
 module.exports = app;
