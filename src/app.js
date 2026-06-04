@@ -4,6 +4,7 @@ const cors = require("cors");
 const deviceRoutes = require("./routes/deviceRoutes");
 const measurementRoutes = require("./routes/measurementRoutes");
 const observationRoutes = require("./routes/observationRoutes");
+const ambianceRoutes = require("./routes/ambianceRoutes");
 
 
 const app = express();
@@ -44,5 +45,5 @@ app.get("/", (req, res) => {
 app.use("/devices", deviceRoutes);
 app.use("/measurements", measurementRoutes);
 app.use("/observations", observationRoutes);
-
+app.use("/ambiance", ambianceRoutes);
 module.exports = app;
