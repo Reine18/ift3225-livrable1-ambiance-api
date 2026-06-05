@@ -1,13 +1,15 @@
+require("dotenv").config();
 const axios = require("axios");
+
 
 // API backend
 const API_URL = "http://localhost:3000/measurements";
 
 // Clé API générée par POST /devices
-const API_KEY = "fc5d8238b998c76e13851dc3fc93c5f4739db611eb6310fae08da29e50580379";
+const API_KEY = process.env.API_KEY || "On mettra chacune nos API_KEY dans un .env séparé pour pas que ça traîne sur GitHub";
 
-// Adresse affichée par Phyphox sur telephone Reine
-const PHYPHOX_BASE_URL = "http://10.51.250.188";
+// Adresse affichée par Phyphox sur telephone de celle qui envoie les données( Reine/Meriem/Samah)
+const PHYPHOX_BASE_URL = process.env.PHYPHOX_BASE_URL;
 
 // Endpoint Phyphox pour l'intensité sonore
 const PHYPHOX_URL = `${PHYPHOX_BASE_URL}/get?dbUncal`;
@@ -33,7 +35,22 @@ const sendMeasurement = async () => {
       return;
     }
 
-    const soundLevel = Number(dbData[dbData.length - 1]);
+    const rawValue =
+  dbData[dbData.length - 1];
+
+if (
+  rawValue === null ||
+  rawValue === undefined
+) {
+  console.log(
+    "Mesure ignorée : valeur nulle"
+  );
+  return;
+}
+
+const soundLevel = Number(rawValue);
+
+
 
     if (Number.isNaN(soundLevel)) {
       console.log("Mesure ignorée : valeur invalide.");
@@ -45,6 +62,10 @@ const sendMeasurement = async () => {
       amplitude: Math.abs(soundLevel),
       timestamp: new Date().toISOString(),
     };
+
+
+
+
 
     const apiResponse = await axios.post(API_URL, measurement, {
       headers: {
