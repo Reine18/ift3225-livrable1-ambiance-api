@@ -1,0 +1,6 @@
+$kind: http-request
+name: Get Observations
+method: GET
+url: '{{baseUrl}}/observations'
+description: "Retourne toutes les observations enregistrées, triées par date décroissante, avec les informations du device associé."
+order: 2000

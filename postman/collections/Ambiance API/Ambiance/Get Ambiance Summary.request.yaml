@@ -1,0 +1,6 @@
+$kind: http-request
+name: Get Ambiance Summary
+method: GET
+url: '{{baseUrl}}/ambiance/{{location}}/summary'
+description: "Retourne un résumé de l'ambiance pour un lieu donné: nombre de mesures, nombre d'observations, niveau sonore moyen, niveau d'ambiance calculé (`calm` < 40 dB, `normal` < 60 dB, `busy` < 75 dB, `noisy` >= 75 dB), et la dernière observation."
+order: 1000

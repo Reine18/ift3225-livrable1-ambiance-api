@@ -1,0 +1,6 @@
+$kind: http-request
+name: Get Ambiance History
+method: GET
+url: '{{baseUrl}}/ambiance/{{location}}/history'
+description: "Retourne l'historique complet des mesures sonores pour un lieu donné, triées par date décroissante."
+order: 2000

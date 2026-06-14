@@ -1,0 +1,6 @@
+$kind: http-request
+name: Get Measurements
+method: GET
+url: '{{baseUrl}}/measurements'
+description: "Retourne toutes les mesures enregistrées, triées par date décroissante, avec les informations du device associé."
+order: 2000

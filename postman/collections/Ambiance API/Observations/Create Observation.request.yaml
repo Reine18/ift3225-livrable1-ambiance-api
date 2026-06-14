@@ -1,0 +1,20 @@
+$kind: http-request
+name: Create Observation
+method: POST
+url: '{{baseUrl}}/observations'
+description: "Enregistre une observation qualitative. Requiert une clé API valide dans le header `x-api-key`. Les champs `location` et `vibe` sont requis. `vibe` doit être l'une des valeurs: `calm`, `normal`, `busy`, `noisy`. `sourceProximity` est optionnel: `near`, `medium`, `far`."
+order: 1000
+headers:
+  - key: x-api-key
+    value: '{{apiKey}}'
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "location": "Bibliothèque",
+      "vibe": "calm",
+      "sourceProximity": "far",
+      "notes": "Très calme ce matin"
+    }

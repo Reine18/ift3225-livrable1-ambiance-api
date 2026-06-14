@@ -1,0 +1,10 @@
+$kind: collection
+name: Ambiance API
+description: "Collection pour l'API Ambiance (IFT3225). Permet de gérer les devices, mesures sonores, observations qualitatives et de consulter des résumés d'ambiance par lieu."
+variables:
+  - key: baseUrl
+    value: 'http://localhost:3000'
+  - key: apiKey
+    value: ''
+  - key: location
+    value: "Bibliothèque"

@@ -1,0 +1,6 @@
+$kind: http-request
+name: Get Quiet Hours
+method: GET
+url: '{{baseUrl}}/ambiance/{{location}}/quiet-hours'
+description: "Retourne les heures les plus calmes pour un lieu donné, basé sur le niveau sonore moyen par heure, triées du plus calme au plus bruyant."
+order: 3000
