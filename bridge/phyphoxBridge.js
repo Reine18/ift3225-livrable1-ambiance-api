@@ -6,7 +6,7 @@ const axios = require("axios");
 const API_URL = "http://localhost:3000/measurements";
 
 // Clé API générée par POST /devices
-const API_KEY = process.env.API_KEY || "On mettra chacune nos API_KEY dans un .env séparé pour pas que ça traîne sur GitHub";
+const API_KEY = process.env.DEVICE_API_KEY || "On mettra chacune nos API_KEY dans un .env séparé pour pas que ça traîne sur GitHub";
 
 // Adresse affichée par Phyphox sur telephone de celle qui envoie les données( Reine/Meriem/Samah)
 const PHYPHOX_BASE_URL = process.env.PHYPHOX_BASE_URL;
