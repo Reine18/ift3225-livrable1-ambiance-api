@@ -13,6 +13,12 @@ const deviceSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    locationId: { //pour que lancien code continue a fonctionner avec location en texte
+                  // et que le new code puisse utiliser locationId poue avoir acces aux coordonnees du lieu 
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Location",
+      default: null,
+    },
 
     apiKey: {
       type: String,
