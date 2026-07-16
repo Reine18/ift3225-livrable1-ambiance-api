@@ -5,7 +5,7 @@ const deviceRoutes = require("./routes/deviceRoutes");
 const measurementRoutes = require("./routes/measurementRoutes");
 const observationRoutes = require("./routes/observationRoutes");
 const ambianceRoutes = require("./routes/ambianceRoutes");
-
+const userRoutes= require("./routes/userRoutes");
 
 const app = express();
 
