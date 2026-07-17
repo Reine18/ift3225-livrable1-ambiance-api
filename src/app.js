@@ -6,6 +6,7 @@ const measurementRoutes = require("./routes/measurementRoutes");
 const observationRoutes = require("./routes/observationRoutes");
 const ambianceRoutes = require("./routes/ambianceRoutes");
 const userRoutes= require("./routes/userRoutes");
+const locationRoutes= require("./routes/locationRoutes");
 
 const app = express();
 
@@ -15,6 +16,7 @@ const app = express();
 // Route temporaire pour tester middlewares
 
 const protect = require("./middlewares/authMiddleware");
+const app= express();
 
 app.get("/test-auth", protect, (req, res) => {
   res.json({
@@ -46,4 +48,6 @@ app.use("/devices", deviceRoutes);
 app.use("/measurements", measurementRoutes);
 app.use("/observations", observationRoutes);
 app.use("/ambiance", ambianceRoutes);
+app.use("/users", userRoutes);
+app.use("/locations", locationRoutes);
 module.exports = app;
