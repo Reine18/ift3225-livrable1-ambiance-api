@@ -5,7 +5,7 @@ const observationSchema = new mongoose.Schema(
     deviceId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Device",
-      required: true,
+      default: null, //on a eu un blocage dans le flux usager connecte
     },
     
     location: {

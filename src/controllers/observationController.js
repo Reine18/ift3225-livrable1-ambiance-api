@@ -3,7 +3,7 @@ const Observation = require("../models/Observation");
 // POST /observations
 const createObservation = async (req, res) => {
   try {
-    const { location, vibe, sourceProximity, notes, timestamp } = req.body;
+    const { location, vibe, sourceProximity, notes, timestamp, locationId } = req.body;
 
     if (!location || !vibe) {
       return res.status(400).json({
@@ -12,14 +12,25 @@ const createObservation = async (req, res) => {
       });
     }
 
-    const observation = await Observation.create({
-      deviceId: req.device._id,
+    const observationData = { 
       location,
+      locationId: locationId|| null,
       vibe,
       sourceProximity,
       notes,
       timestamp: timestamp || Date.now(),
-    });
+      deviceId: null,
+      author: null, 
+    };
+    if (req.authType==="device"&& req.device){ // le middleware dauthen met des info sur req
+                                          // ici la requete a ete authentifie comme un appareil
+                                          //car dans middleware on a : req.authType = "device";
+      observation.deviceId=req.device._id;
+    }
+    if(req.authType==="user"&& req.user){  // et ici la requete est authentifiee comme un utilisateur connecte
+      observation.author=req.user.id;
+    }
+    const observation= await Observation.create(observationData);
 
     return res.status(201).json({
       success: true,
@@ -39,6 +50,8 @@ const getObservations = async (req, res) => {
   try {
     const observations = await Observation.find()
       .populate("deviceId", "name location")
+      .populate("author", "name email role") // option author sans casse lancienne version par appareil
+      .populate("locationId", "name latitude longitude") //meme chose 
       .sort({ createdAt: -1 });
 
     return res.status(200).json({
