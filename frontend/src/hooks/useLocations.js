@@ -12,9 +12,9 @@ function useLocations() {
       setIsLoading(true);
       setError(null);
 
-      const response = await getLocations();
+      const data = await getLocations();
 
-      setLocations(response.data ?? []);
+      setLocations(data ?? []);
     } catch (requestError) {
       setError(
         requestError.response?.data?.message ??

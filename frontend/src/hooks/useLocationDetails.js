@@ -15,6 +15,7 @@ function useLocationDetails(locationId) {
 
   const loadLocationDetails = useCallback(async () => {
     if (!locationId) {
+      setIsLoading(false);
       return;
     }
 
@@ -23,18 +24,18 @@ function useLocationDetails(locationId) {
       setError(null);
 
       const [
-        summaryResponse,
-        historyResponse,
-        quietHoursResponse,
+        summaryData,
+        historyData,
+        quietHoursData,
       ] = await Promise.all([
         getAmbianceSummary(locationId),
         getAmbianceHistory(locationId),
         getQuietHours(locationId),
       ]);
 
-      setSummary(summaryResponse.data ?? null);
-      setHistory(historyResponse.data ?? []);
-      setQuietHours(quietHoursResponse.data ?? []);
+      setSummary(summaryData ?? null);
+      setHistory(historyData ?? []);
+      setQuietHours(quietHoursData ?? []);
     } catch (requestError) {
       setError(
         requestError.response?.data?.message ??

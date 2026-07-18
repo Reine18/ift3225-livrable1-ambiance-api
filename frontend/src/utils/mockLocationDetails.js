@@ -1,3 +1,6 @@
+// TODO API : supprimer ce fichier lorsqu'il ne sera plus utilisé. 
+
+
 export const mockLocationDetails = {
   "bibliotheque-udem": {
     id: "bibliotheque-udem",

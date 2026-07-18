@@ -1,25 +1,7 @@
-import { getAmbiancePresentation } from "../../utils/ambiancePresentation";
-
-function getDominantClassification(locations) {
-  const counts = locations.reduce((result, location) => {
-    const classification = location.classification;
-
-    if (classification !== "stale") {
-      result[classification] = (result[classification] ?? 0) + 1;
-    }
-
-    return result;
-  }, {});
-
-  const entries = Object.entries(counts);
-
-  if (entries.length === 0) {
-    return "stale";
-  }
-
-  entries.sort((first, second) => second[1] - first[1]);
-
-  return entries[0][0];
+function getCalmLocationsCount(locations) {
+  return locations.filter(
+    (location) => location.classification === "calm"
+  ).length;
 }
 
 function getMostRecentUpdate(locations) {
@@ -29,6 +11,10 @@ function getMostRecentUpdate(locations) {
 
   return locations.reduce((mostRecent, location) => {
     const currentDate = new Date(location.updatedAt);
+
+    if (Number.isNaN(currentDate.getTime())) {
+      return mostRecent;
+    }
 
     if (!mostRecent || currentDate > mostRecent) {
       return currentDate;
@@ -61,14 +47,44 @@ function formatLastUpdate(date) {
   return `Dernière mise à jour il y a ${differenceHours} h`;
 }
 
+function getCalmAvailabilityPresentation(calmCount) {
+  if (calmCount === 0) {
+    return {
+      icon: "💬",
+      title: "Aucun lieu calme disponible",
+      description:
+        "Consultez les lieux modérés ou revenez un peu plus tard.",
+      classification: "moderate",
+    };
+  }
+
+  if (calmCount === 1) {
+    return {
+      icon: "🪷",
+      title: "1 lieu calme disponible",
+      description:
+        "Un espace est actuellement propice à l’étude, à la lecture et à la concentration.",
+      classification: "calm",
+    };
+  }
+
+  return {
+    icon: "🪷",
+    title: `${calmCount} lieux calmes disponibles`,
+    description:
+      "Des espaces sont actuellement propices à l’étude, à la lecture et à la concentration.",
+    classification: "calm",
+  };
+}
+
 function CurrentAmbianceBanner({ locations = [] }) {
-  const dominantClassification = getDominantClassification(locations);
-  const presentation = getAmbiancePresentation(dominantClassification);
+  const calmCount = getCalmLocationsCount(locations);
+  const presentation = getCalmAvailabilityPresentation(calmCount);
   const lastUpdate = getMostRecentUpdate(locations);
 
   return (
     <section
-      className={`current-ambiance-banner banner-${dominantClassification}`}
+      className={`current-ambiance-banner banner-${presentation.classification}`}
       aria-labelledby="current-ambiance-title"
     >
       <div className="current-ambiance-icon" aria-hidden="true">
@@ -81,7 +97,7 @@ function CurrentAmbianceBanner({ locations = [] }) {
         </p>
 
         <h2 id="current-ambiance-title" className="h4 fw-bold mb-2">
-          {presentation.label}
+          {presentation.title}
         </h2>
 
         <p className="mb-0 current-ambiance-description">
@@ -90,11 +106,6 @@ function CurrentAmbianceBanner({ locations = [] }) {
       </div>
 
       <div className="current-ambiance-meta">
-        <p className="fw-bold mb-1">
-          {locations.length} lieu{locations.length > 1 ? "x" : ""} disponible
-          {locations.length > 1 ? "s" : ""}
-        </p>
-
         <p className="small mb-0">
           <i className="bi bi-clock me-1" aria-hidden="true" />
           {formatLastUpdate(lastUpdate)}

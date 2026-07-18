@@ -5,7 +5,11 @@ import AmbianceBadge from "../components/ambiance/AmbianceBadge";
 import SummaryCard from "../components/ambiance/SummaryCard";
 import EmptyState from "../components/feedback/EmptyState";
 import { getAmbiancePresentation } from "../utils/ambiancePresentation";
+
+// TODO API : remplacer les données mockées par les données
+// retournées par useLocationDetails(locationId).
 import { mockLocationDetails } from "../utils/mockLocationDetails";
+
 import SoundChart from "../components/ambiance/SoundChart";
 import ObservationCard from "../components/ambiance/ObservationCard";
 import QuietHoursTable from "../components/ambiance/QuietHoursTable";
@@ -32,7 +36,12 @@ function formatUpdatedAt(updatedAt) {
 
 function LocationDetailsPage() {
   const { locationId } = useParams();
-  const location = mockLocationDetails[locationId];
+  
+  // TODO API : supprimer cette lecture lorsque
+// LocationDetailsPage utilisera useLocationDetails().
+const location = mockLocationDetails[locationId];
+
+
 
   if (!location) {
     return (
