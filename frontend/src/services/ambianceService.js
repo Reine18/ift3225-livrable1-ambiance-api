@@ -1,34 +1,41 @@
 import httpClient from "../api/httpClient";
 
-// TODO API CONTRACT : confirmer si les endpoints utilisent
-// l’identifiant, le nom ou le slug du lieu.
-
-// TODO API CONTRACT : vérifier la structure exacte de la réponse
-// retournée par l’endpoint summary.
 export async function getAmbianceSummary(location) {
   const response = await httpClient.get(
     `/ambiance/${encodeURIComponent(location)}/summary`
   );
 
-  return response.data;
+  return response.data.data;
 }
 
-// TODO API CONTRACT : vérifier la structure exacte de la réponse
-// retournée par l’endpoint history.
 export async function getAmbianceHistory(location) {
   const response = await httpClient.get(
     `/ambiance/${encodeURIComponent(location)}/history`
   );
 
-  return response.data;
+  return response.data.data;
 }
 
-// TODO API CONTRACT : vérifier la structure exacte de la réponse
-// retournée par l’endpoint quiet-hours.
 export async function getQuietHours(location) {
   const response = await httpClient.get(
     `/ambiance/${encodeURIComponent(location)}/quiet-hours`
   );
 
-  return response.data;
+  return response.data.data;
+}
+
+export async function getAmbianceForecast(
+  location,
+  hours = 6
+) {
+  const response = await httpClient.get(
+    `/ambiance/${encodeURIComponent(location)}/forecast`,
+    {
+      params: {
+        hours,
+      },
+    }
+  );
+
+  return response.data.data;
 }

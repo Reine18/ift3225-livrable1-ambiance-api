@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import {
+  getAmbianceForecast,
   getAmbianceHistory,
   getAmbianceSummary,
   getQuietHours,
@@ -12,6 +13,7 @@ function useLocationDetails(locationId) {
   const [quietHours, setQuietHours] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [forecast, setForecast] = useState([]);
 
   const loadLocationDetails = useCallback(async () => {
     if (!locationId) {
@@ -27,15 +29,18 @@ function useLocationDetails(locationId) {
         summaryData,
         historyData,
         quietHoursData,
+        forecastData,
       ] = await Promise.all([
         getAmbianceSummary(locationId),
         getAmbianceHistory(locationId),
         getQuietHours(locationId),
+        getAmbianceForecast(locationId),
       ]);
 
       setSummary(summaryData ?? null);
       setHistory(historyData ?? []);
       setQuietHours(quietHoursData ?? []);
+      setForecast(forecastData ?? []);
     } catch (requestError) {
       setError(
         requestError.response?.data?.message ??
