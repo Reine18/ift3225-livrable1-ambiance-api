@@ -8,7 +8,6 @@ const ambianceRoutes = require("./routes/ambianceRoutes");
 const userRoutes= require("./routes/userRoutes");
 const locationRoutes= require("./routes/locationRoutes");
 
-const app = express();
 
 
 

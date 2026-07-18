@@ -1,5 +1,25 @@
+
 const Measurement = require("../models/Measurement");
 const Observation = require("../models/Observation");
+
+
+const classifyAmbianceRelative= (value,values) => {
+  if (value===null || !values.length){
+    return "unknown"
+  }
+  const sorted = [...values].sort((a, b) => a - b);
+
+  const q1 = sorted[Math.floor((sorted.length - 1) * 0.25)];
+  const q2 = sorted[Math.floor((sorted.length - 1) * 0.5)];
+  const q3 = sorted[Math.floor((sorted.length - 1) * 0.75)];
+
+  if (value <= q1) return "calm";
+  if (value <= q2) return "normal";
+  if (value <= q3) return "busy";
+  return "noisy";
+
+
+}
 
 // GET /ambiance/:location/summary
 const getAmbianceSummary = async (req, res) => {
@@ -24,21 +44,38 @@ const getAmbianceSummary = async (req, res) => {
         message: "Aucune donnée trouvée pour ce lieu.",
       });
     }
+  
 
-    const avgSoundLevel =
-      locationMeasurements.length > 0
+    const avgSoundLevel = soundLevel.length> 0
+    ?soundLevel.reduce((sum,v)=> sum + v, 0) / soundLevel/length : null;
+
+
+    
+    
+    /* locationMeasurements.length > 0
         ? locationMeasurements.reduce((sum, m) => sum + m.soundLevel, 0) /
           locationMeasurements.length
-        : null;
+        : null; */
 
-    let ambianceLevel = "unknown";
+    const ambianceLevel = avgSoundLevel !== null 
+    ? classifyAmbianceRelative(avgSoundLevel, soundLevels) :"unknown";
 
-    if (avgSoundLevel !== null) {
+
+   /** 
+    * Phyphox en dbUncal donne parfois des valeurs négatives, donc les 
+    * seuils fixes comme <40 ne correspondent pas bien et classent presque 
+    * tout en "calm".Le nouveau code compare les mesures entre elles dans le 
+    * même lieu, donc la classification devient adaptée au contexte réel de ce lieu.
+    * 
+    * 
+    * if (avgSoundLevel !== null) {
       if (avgSoundLevel < 40) ambianceLevel = "calm";
       else if (avgSoundLevel < 60) ambianceLevel = "normal";
       else if (avgSoundLevel < 75) ambianceLevel = "busy";
       else ambianceLevel = "noisy";
     }
+      
+    **/
 
     return res.status(200).json({
       success: true,
@@ -46,7 +83,7 @@ const getAmbianceSummary = async (req, res) => {
       data: {
         measurementsCount: locationMeasurements.length,
         observationsCount: observations.length,
-        averageSoundLevel: avgSoundLevel,
+        averageSoundLevelDdUncal : avgSoundLevel,
         ambianceLevel,
         latestObservation: observations[0] || null,
       },
@@ -129,10 +166,10 @@ const getQuietHours = async (req, res) => {
     const quietHours = Object.values(hourlyData)
       .map((item) => ({
         hour: item.hour,
-        averageSoundLevel: item.totalSoundLevel / item.count,
+        averageSoundLevellDbUncal: item.totalSoundLevel / item.count,
         count: item.count,
       }))
-      .sort((a, b) => a.averageSoundLevel - b.averageSoundLevel);
+      .sort((a, b) => a.averageSoundLevellDbUncal - b.averageSoundLevelDbUncall);
 
     return res.status(200).json({
       success: true,

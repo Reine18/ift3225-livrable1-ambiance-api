@@ -8,10 +8,10 @@ const generateToken = (user) => {
       email: user.email,
       role: user.role,
       name: user.name,
-      id: user._id, // un id est cree automatiquement par mangodb unique et stable
+      id: user._id,
     },
-    process.env.JWT_SECRET,// est la signture du token, la cle secrete du serveur
-    { expiresIn: "1h" }      // est qui expire apres 1 heure
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" }
   );
 };
 
@@ -20,13 +20,13 @@ const registerUser = async (req, res) => {
     const { email, password, name } = req.body;
 
     if (!email || !password || !name) {
-      return res.status(400).json({    // sil oublie dentrer une information importante
+      return res.status(400).json({
         success: false,
         message: "Email, name and password are required.",
       });
     }
 
-    const existingUser = await User.findOne({ email }); // pas trouver de email avec le user 
+    const existingUser = await User.findOne({ email });
 
     if (existingUser) {
       return res.status(409).json({
@@ -67,12 +67,12 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
-    const { email, password, name } = req.body;
+    const { email, password } = req.body;
 
-    if (!email || !password || !name) {
+    if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: "Email, password and full name are required.",
+        message: "Email and password are required.",
       });
     }
 
@@ -81,7 +81,7 @@ const loginUser = async (req, res) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: "Email is invalide.",
+        message: "Email invalide.",
       });
     }
 
