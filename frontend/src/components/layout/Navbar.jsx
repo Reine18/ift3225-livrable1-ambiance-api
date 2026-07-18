@@ -1,9 +1,12 @@
 import { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
 import { Container, Nav, Navbar as BootstrapNavbar } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 function Navbar() {
   const [activeSection, setActiveSection] = useState("carte");
+  const { isAuthenticated, logout } = useAuth();
+
 
   return (
     <BootstrapNavbar
@@ -42,6 +45,15 @@ function Navbar() {
             >
               À propos
             </Nav.Link>
+
+            {isAuthenticated ? (
+              <Nav.Link onClick={logout}>Se déconnecter</Nav.Link>
+            ) : (
+              <Nav.Link as={Link} to="/auth">
+                Se connecter
+              </Nav.Link>
+            )}
+            
           </Nav>
         </BootstrapNavbar.Collapse>
       </Container>
