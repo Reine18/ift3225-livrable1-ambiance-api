@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import "./auth.css";
 
 export default function LoginForm({ onSwitchToRegister }) {
   const { login } = useAuth();
@@ -25,8 +26,10 @@ export default function LoginForm({ onSwitchToRegister }) {
   }
 
   return (
-    <div className="form">
+  <div className="auth-page-wrapper">
+    <div className="auth-form">
       <h1>Connexion</h1>
+      <p className="auth-form-subtitle">Connectez-vous pour continuer.</p>
 
       {error && (
         <div className="error">
@@ -63,5 +66,7 @@ export default function LoginForm({ onSwitchToRegister }) {
         </button>
       </p>
     </div>
-  );
+  </div>
+);
 }
+

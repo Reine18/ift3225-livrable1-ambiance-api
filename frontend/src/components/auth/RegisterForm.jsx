@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import "./auth.css";
 
 export default function RegisterForm({ onSwitchToLogin }) {
   const { register } = useAuth();
@@ -35,8 +36,10 @@ export default function RegisterForm({ onSwitchToLogin }) {
   }
 
   return (
-    <div className="form">
+  <div className="auth-page-wrapper">
+    <div className="auth-form">
       <h1>Inscription</h1>
+      <p className="auth-form-subtitle">Créez votre compte pour commencer.</p>
 
       {error && (
         <div className="error">
@@ -81,14 +84,15 @@ export default function RegisterForm({ onSwitchToLogin }) {
           S'inscrire
         </button>
       </form>
+
       <p>
         Déjà un compte ?{" "}
         <button type="button" onClick={onSwitchToLogin}>
           Se connecter
         </button>
       </p>
-
     </div>
-  );
+  </div>
+);
 
 }

@@ -1,0 +1,35 @@
+.account-list-page {
+  max-width: 40rem;
+  margin: 3rem auto;
+  padding: 0 2rem;
+}
+
+.account-list-page h1 {
+  margin-bottom: 1.5rem;
+  color: var(--ambiance-text);
+  font-size: 1.6rem;
+  font-weight: 750;
+}
+
+.account-list-page ul {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.account-list-page li {
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--ambiance-border);
+  border-radius: var(--ambiance-radius-md);
+  background-color: var(--ambiance-surface);
+  box-shadow: var(--ambiance-shadow-sm);
+}
+
+.account-list-page li a {
+  font-weight: 600;
+}
+
+.account-list-page p {
+  color: var(--ambiance-text-muted);
+}

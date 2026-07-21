@@ -1,0 +1,101 @@
+.observation-page-wrapper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: calc(100vh - 200px);
+  padding: 3rem 2rem;
+  background-color: var(--ambiance-background);
+}
+
+.observation-form {
+  width: 100%;
+  max-width: 30rem;
+  padding: 2.5rem;
+  border-radius: var(--ambiance-radius-lg);
+  background-color: var(--ambiance-surface);
+  box-shadow: var(--ambiance-shadow-md);
+}
+
+.observation-form h1 {
+  margin-bottom: 1.5rem;
+  color: var(--ambiance-text);
+  font-size: 1.5rem;
+  font-weight: 750;
+}
+
+.observation-form label {
+  display: block;
+  margin-top: 1.1rem;
+  margin-bottom: 0.4rem;
+  color: var(--ambiance-text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.observation-form input,
+.observation-form select,
+.observation-form textarea {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--ambiance-border);
+  border-radius: var(--ambiance-radius-sm);
+  background-color: var(--ambiance-background);
+  color: var(--ambiance-text);
+  font-size: 0.95rem;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.observation-form input:focus,
+.observation-form select:focus,
+.observation-form textarea:focus {
+  outline: none;
+  border-color: var(--ambiance-primary);
+  box-shadow: 0 0 0 3px var(--ambiance-primary-soft);
+}
+
+.observation-form button {
+  padding: 0.75rem 1.25rem;
+  margin-top: 1.75rem;
+  margin-right: 0.75rem;
+  border: none;
+  border-radius: var(--ambiance-radius-sm);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.observation-form button[type="submit"] {
+  background-color: var(--ambiance-primary);
+  color: #ffffff;
+}
+
+.observation-form button[type="submit"]:hover {
+  background-color: var(--ambiance-primary-dark);
+}
+
+.observation-form button[type="reset"] {
+  background-color: var(--ambiance-background);
+  border: 1px solid var(--ambiance-border);
+  color: var(--ambiance-text-muted);
+}
+
+.observation-form .error {
+  margin-top: 1rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--ambiance-radius-sm);
+  background-color: var(--ambiance-animated-soft);
+  color: var(--ambiance-animated);
+  font-size: 0.88rem;
+}
+
+.observation-form .success {
+  margin-top: 1rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--ambiance-radius-sm);
+  background-color: var(--ambiance-calm-soft);
+  color: var(--ambiance-calm);
+  font-size: 0.88rem;
+}

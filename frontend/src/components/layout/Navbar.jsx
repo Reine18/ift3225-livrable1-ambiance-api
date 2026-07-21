@@ -47,7 +47,13 @@ function Navbar() {
             </Nav.Link>
 
             {isAuthenticated ? (
-              <Nav.Link onClick={logout}>Se déconnecter</Nav.Link>
+              <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+                <Nav.Link as={Link} to="/observation">Observation</Nav.Link>
+                <Nav.Link as={Link} to="/favorites">Favoris</Nav.Link>
+                <Nav.Link as={Link} to="/mes-lieux">Mes lieux</Nav.Link>
+                <Nav.Link as={Link} to="/contributions">Contributions</Nav.Link>
+                <Nav.Link onClick={logout}>Se déconnecter</Nav.Link>
+              </div>
             ) : (
               <Nav.Link as={Link} to="/auth">
                 Se connecter

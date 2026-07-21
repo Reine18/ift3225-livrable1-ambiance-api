@@ -2,6 +2,7 @@ import { Col, Container, Row } from "react-bootstrap";
 import { Link, useParams } from "react-router-dom";
 
 import AmbianceBadge from "../components/ambiance/AmbianceBadge";
+import FavoriteButton from "../components/favorites/FavoriteButton";
 import SummaryCard from "../components/ambiance/SummaryCard";
 import EmptyState from "../components/feedback/EmptyState";
 import { getAmbiancePresentation } from "../utils/ambiancePresentation";
@@ -89,6 +90,8 @@ const location = mockLocationDetails[locationId];
                   classification={location.classification}
                   size="large"
                 />
+
+                <FavoriteButton locationId={locationId} />
 
                 <span className="text-secondary">
                   <i
