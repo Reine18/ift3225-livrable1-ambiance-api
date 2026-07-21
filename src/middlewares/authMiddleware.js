@@ -42,26 +42,23 @@ const protect = async (req, res, next) => {
 
   //sinon on verifie jwt si contient autho bearer sinon on refuse avec 401
  
-    if(authHeader && authHeader.startsWith("Bearer ")){  
-      const token = authHeader.split(" ")[1];    // on split la chaine en deux pour recuperer le vrai token JWT
-      // on verifi le token en cas ou il est expire ou signe avec une mauvaise cle
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+  const token = authHeader.split(" ")[1];
 
-      try{
-        const decoded= jwt.verify(token, process.env.JWT_SECRET); //validation et verificaiton 
-        req.user=decoded;                                         // decoded contient les infos qui etaient dans le token lors du login
-        req.authType="user";  //pour distinguer phase 1 et 2 
-        return next();
-      }//sinon si erreur avec le token 
-      catch (error){
-        return res.status(401).json({ 
-          success: false,
-          message: "le token est expire ou invalide"
-        });
-      }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+    req.user = decoded;
+    req.authType = "user";
 
-    }
-
+    return next();
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message: "Le token est expiré ou invalide",
+    });
+  }
+}
 
 
     return res.status(401).json({   // si aucun mecanisme est fourni 
