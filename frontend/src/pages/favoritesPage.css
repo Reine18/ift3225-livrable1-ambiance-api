@@ -1,0 +1,35 @@
+.favorites-page {
+  max-width: 40rem;
+  margin: 3rem auto;
+  padding: 0 2rem;
+}
+
+.favorites-page h1 {
+  margin-bottom: 1.5rem;
+  color: var(--ambiance-text);
+  font-size: 1.6rem;
+  font-weight: 750;
+}
+
+.favorites-page ul {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.favorites-page li {
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--ambiance-border);
+  border-radius: var(--ambiance-radius-md);
+  background-color: var(--ambiance-surface);
+  box-shadow: var(--ambiance-shadow-sm);
+}
+
+.favorites-page li a {
+  font-weight: 600;
+}
+
+.favorites-page p {
+  color: var(--ambiance-text-muted);
+}

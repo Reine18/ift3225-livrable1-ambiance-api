@@ -1,0 +1,24 @@
+.favorite-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--ambiance-border);
+  border-radius: var(--ambiance-radius-sm);
+  background-color: var(--ambiance-surface);
+  color: var(--ambiance-text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.favorite-button:hover {
+  border-color: var(--ambiance-primary);
+  color: var(--ambiance-primary);
+}
+
+.favorite-button.is-favorite {
+  border-color: var(--ambiance-primary);
+  background-color: var(--ambiance-primary-soft);
+  color: var(--ambiance-primary);
+}

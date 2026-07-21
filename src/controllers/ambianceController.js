@@ -1,6 +1,11 @@
 const Measurement = require("../models/Measurement");
 const Observation = require("../models/Observation");
 
+function normalize(str) {
+  if (!str) return "";
+  return str.toLowerCase().trim().replace(/[\s_]+/g, "-");
+}
+
 /**
  * Classe une ambiance en comparant le niveau sonore moyen
  * avec la distribution des niveaux sonores du lieu.
@@ -27,6 +32,7 @@ const classifyAmbianceRelative = (value, values) => {
 const getAmbianceSummary = async (req, res) => {
   try {
     const { location } = req.params;
+    const normalizedLocation = normalize(location);
 
     const measurements = await Measurement.find()
       .populate("deviceId", "location")
@@ -35,12 +41,16 @@ const getAmbianceSummary = async (req, res) => {
     const locationMeasurements = measurements.filter(
       (measurement) =>
         measurement.deviceId &&
-        measurement.deviceId.location === location
+        normalize(measurement.deviceId.location) === normalizedLocation
     );
 
-    const observations = await Observation.find({ location }).sort({
+    const allObservations = await Observation.find().sort({
       timestamp: -1,
     });
+
+    const observations = allObservations.filter(
+      (obs) => normalize(obs.location) === normalizedLocation
+    );
 
     if (
       locationMeasurements.length === 0 &&
@@ -52,7 +62,6 @@ const getAmbianceSummary = async (req, res) => {
       });
     }
 
-    // On utilise la valeur absolue des mesures Phyphox
     const soundLevels = locationMeasurements.map((measurement) =>
       Math.abs(measurement.soundLevel)
     );
@@ -65,10 +74,7 @@ const getAmbianceSummary = async (req, res) => {
 
     const ambianceLevel =
       averageSoundLevel !== null
-        ? classifyAmbianceRelative(
-            averageSoundLevel,
-            soundLevels
-          )
+        ? classifyAmbianceRelative(averageSoundLevel, soundLevels)
         : "unknown";
 
     const latestMeasurement = locationMeasurements[0] || null;
@@ -108,6 +114,7 @@ const getAmbianceSummary = async (req, res) => {
 const getAmbianceHistory = async (req, res) => {
   try {
     const { location } = req.params;
+    const normalizedLocation = normalize(location);
 
     const measurements = await Measurement.find()
       .populate("deviceId", "location")
@@ -116,7 +123,7 @@ const getAmbianceHistory = async (req, res) => {
     const locationMeasurements = measurements.filter(
       (measurement) =>
         measurement.deviceId &&
-        measurement.deviceId.location === location
+        normalize(measurement.deviceId.location) === normalizedLocation
     );
 
     return res.status(200).json({
@@ -138,6 +145,7 @@ const getAmbianceHistory = async (req, res) => {
 const getQuietHours = async (req, res) => {
   try {
     const { location } = req.params;
+    const normalizedLocation = normalize(location);
 
     const measurements = await Measurement.find().populate(
       "deviceId",
@@ -147,7 +155,7 @@ const getQuietHours = async (req, res) => {
     const locationMeasurements = measurements.filter(
       (measurement) =>
         measurement.deviceId &&
-        measurement.deviceId.location === location
+        normalize(measurement.deviceId.location) === normalizedLocation
     );
 
     if (locationMeasurements.length === 0) {
@@ -171,25 +179,16 @@ const getQuietHours = async (req, res) => {
       }
 
       hourlyData[hour].count += 1;
-
-      // Valeur absolue
-      hourlyData[hour].totalSoundLevel += Math.abs(
-        measurement.soundLevel
-      );
+      hourlyData[hour].totalSoundLevel += Math.abs(measurement.soundLevel);
     });
 
     const quietHours = Object.values(hourlyData)
       .map((item) => ({
         hour: item.hour,
-        averageSoundLevel:
-          item.totalSoundLevel / item.count,
+        averageSoundLevel: item.totalSoundLevel / item.count,
         count: item.count,
       }))
-      .sort(
-        (a, b) =>
-          a.averageSoundLevel -
-          b.averageSoundLevel
-      );
+      .sort((a, b) => a.averageSoundLevel - b.averageSoundLevel);
 
     return res.status(200).json({
       success: true,
@@ -209,12 +208,10 @@ const getQuietHours = async (req, res) => {
 const getAmbianceForecast = async (req, res) => {
   try {
     const { location } = req.params;
+    const normalizedLocation = normalize(location);
 
     const requestedHours = Number(req.query.hours) || 6;
-    const forecastHours = Math.min(
-      Math.max(requestedHours, 1),
-      12
-    );
+    const forecastHours = Math.min(Math.max(requestedHours, 1), 12);
 
     const measurements = await Measurement.find()
       .populate("deviceId", "location")
@@ -223,7 +220,7 @@ const getAmbianceForecast = async (req, res) => {
     const locationMeasurements = measurements.filter(
       (measurement) =>
         measurement.deviceId &&
-        measurement.deviceId.location === location
+        normalize(measurement.deviceId.location) === normalizedLocation
     );
 
     if (locationMeasurements.length === 0) {
@@ -233,10 +230,6 @@ const getAmbianceForecast = async (req, res) => {
       });
     }
 
-    /*
-     * Regroupe tout l'historique par heure de la journée :
-     * toutes les mesures prises à 15 h, à 16 h, etc.
-     */
     const historicalByHour = {};
 
     locationMeasurements.forEach((measurement) => {
@@ -247,9 +240,7 @@ const getAmbianceForecast = async (req, res) => {
       }
 
       const hour = date.getHours();
-      const soundLevel = Math.abs(
-        Number(measurement.soundLevel)
-      );
+      const soundLevel = Math.abs(Number(measurement.soundLevel));
 
       if (!Number.isFinite(soundLevel)) {
         return;
@@ -271,10 +262,6 @@ const getAmbianceForecast = async (req, res) => {
         return "unknown";
       }
 
-      /*
-       * Seuils indicatifs pour la valeur absolue dbUncal.
-       * Ils pourront être ajustés après davantage de collectes.
-       */
       if (averageSoundLevel < 55) return "calm";
       if (averageSoundLevel < 65) return "normal";
       return "busy";
@@ -289,47 +276,37 @@ const getAmbianceForecast = async (req, res) => {
 
     const now = new Date();
 
-    const forecast = Array.from(
-      { length: forecastHours },
-      (_, index) => {
-        const projectedDate = new Date(now);
+    const forecast = Array.from({ length: forecastHours }, (_, index) => {
+      const projectedDate = new Date(now);
 
-        projectedDate.setHours(
-          now.getHours() + index + 1,
-          0,
-          0,
-          0
-        );
+      projectedDate.setHours(now.getHours() + index + 1, 0, 0, 0);
 
-        const hour = projectedDate.getHours();
-        const historicalData = historicalByHour[hour];
+      const hour = projectedDate.getHours();
+      const historicalData = historicalByHour[hour];
 
-        if (!historicalData) {
-          return {
-            hour,
-            projectedAt: projectedDate.toISOString(),
-            averageSoundLevel: null,
-            classification: "unknown",
-            measurementsCount: 0,
-            confidence: "insufficient",
-          };
-        }
-
-        const averageSoundLevel =
-          historicalData.totalSoundLevel /
-          historicalData.count;
-
+      if (!historicalData) {
         return {
           hour,
           projectedAt: projectedDate.toISOString(),
-          averageSoundLevel,
-          classification:
-            classifyProjectedLevel(averageSoundLevel),
-          measurementsCount: historicalData.count,
-          confidence: getConfidence(historicalData.count),
+          averageSoundLevel: null,
+          classification: "unknown",
+          measurementsCount: 0,
+          confidence: "insufficient",
         };
       }
-    );
+
+      const averageSoundLevel =
+        historicalData.totalSoundLevel / historicalData.count;
+
+      return {
+        hour,
+        projectedAt: projectedDate.toISOString(),
+        averageSoundLevel,
+        classification: classifyProjectedLevel(averageSoundLevel),
+        measurementsCount: historicalData.count,
+        confidence: getConfidence(historicalData.count),
+      };
+    });
 
     return res.status(200).json({
       success: true,
@@ -340,8 +317,7 @@ const getAmbianceForecast = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message:
-        "Erreur lors du calcul de la projection d'ambiance.",
+      message: "Erreur lors du calcul de la projection d'ambiance.",
       error: error.message,
     });
   }

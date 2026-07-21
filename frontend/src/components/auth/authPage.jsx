@@ -19,7 +19,7 @@ export default function AuthPage() {
           <nav>
             <Link to="/observation">Soumettre une observation</Link>
             <Link to="/favorites">Mes favoris</Link>
-            <Link to="/mes-lieux">Mes lieux</Link>
+            <Link to="/lieux">Mes lieux</Link>
             <Link to="/contributions">Mes contributions</Link>
           </nav>
 
