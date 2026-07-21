@@ -42,8 +42,8 @@ const protect = async (req, res, next) => {
 
   //sinon on verifie jwt si contient autho bearer sinon on refuse avec 401
  
-    if(authHeader && authHeader.startWith("Bearer ")){  
-      const token = authHeader.split("")[1];    // on split la chaine en deux pour recuperer le vrai token JWT
+    if(authHeader && authHeader.startsWith("Bearer ")){  
+      const token = authHeader.split(" ")[1];    // on split la chaine en deux pour recuperer le vrai token JWT
       // on verifi le token en cas ou il est expire ou signe avec une mauvaise cle
 
       try{

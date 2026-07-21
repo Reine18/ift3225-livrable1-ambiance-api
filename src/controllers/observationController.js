@@ -25,10 +25,10 @@ const createObservation = async (req, res) => {
     if (req.authType==="device"&& req.device){ // le middleware dauthen met des info sur req
                                           // ici la requete a ete authentifie comme un appareil
                                           //car dans middleware on a : req.authType = "device";
-      observation.deviceId=req.device._id;
+      observationData.deviceId=req.device._id;
     }
     if(req.authType==="user"&& req.user){  // et ici la requete est authentifiee comme un utilisateur connecte
-      observation.author=req.user.id;
+      observationData.author=req.user.id;
     }
     const observation= await Observation.create(observationData);
 
