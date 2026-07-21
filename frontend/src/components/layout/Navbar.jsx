@@ -47,12 +47,25 @@ function Navbar() {
             </Nav.Link>
 
             {isAuthenticated ? (
-              <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-                <Nav.Link as={Link} to="/observation">Observation</Nav.Link>
-                <Nav.Link as={Link} to="/favorites">Favoris</Nav.Link>
-                <Nav.Link as={Link} to="/lieux">Mes lieux</Nav.Link>
-                <Nav.Link as={Link} to="/contributions">Contributions</Nav.Link>
-                <Nav.Link onClick={logout}>Se déconnecter</Nav.Link>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "1rem",
+                  alignItems: "center",
+                }}
+              >
+                <Nav.Link as={Link} to="/auth">
+                  <i className="bi bi-person-circle me-2" />
+                  Mon compte
+                </Nav.Link>
+
+                <Nav.Link
+                  as="button"
+                  onClick={logout}
+                  className="border-0 bg-transparent"
+                >
+                  Se déconnecter
+                </Nav.Link>
               </div>
             ) : (
               <Nav.Link as={Link} to="/auth">

@@ -1,112 +1,123 @@
-.auth-page-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: calc(100vh - 200px);
-  padding: 2rem;
-  background-color: var(--ambiance-background);
+.account-page {
+  min-height: calc(100vh - 90px);
+  padding: 3rem 1.5rem;
+  background: #f5f9f7;
 }
 
-.auth-form {
-  width: 100%;
-  max-width: 24rem;
-  padding: 2.5rem;
-  border-radius: var(--ambiance-radius-lg);
-  background-color: var(--ambiance-surface);
-  box-shadow: var(--ambiance-shadow-md);
+.account-container {
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
-.auth-form h1 {
-  margin-bottom: 0.35rem;
-  color: var(--ambiance-text);
-  font-size: 1.5rem;
-  font-weight: 750;
+.account-header {
+  margin-bottom: 2rem;
 }
 
-.auth-form-subtitle {
-  margin-bottom: 1.75rem;
-  color: var(--ambiance-text-muted);
-  font-size: 0.9rem;
-}
-
-.auth-form .label {
-  display: block;
-  margin-top: 1.1rem;
-  margin-bottom: 0.4rem;
-  color: var(--ambiance-text-muted);
-  font-size: 0.78rem;
+.account-eyebrow {
+  color: #4ba17d;
+  font-size: 0.85rem;
   font-weight: 700;
-  letter-spacing: 0.03em;
   text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.75rem;
 }
 
-.auth-form .input {
-  width: 100%;
-  padding: 0.7rem 0.9rem;
-  border: 1px solid var(--ambiance-border);
-  border-radius: var(--ambiance-radius-sm);
-  background-color: var(--ambiance-background);
-  color: var(--ambiance-text);
-  font-size: 0.95rem;
-  box-sizing: border-box;
+.account-header h1 {
+  margin-bottom: 0.75rem;
+  font-size: 3rem;
+  font-weight: 800;
+  color: #233538;
 }
 
-.auth-form .input:focus {
-  outline: none;
-  border-color: var(--ambiance-primary);
-  box-shadow: 0 0 0 3px var(--ambiance-primary-soft);
-}
-
-.auth-form .btn {
-  width: 100%;
-  margin-top: 1.75rem;
-  padding: 0.8rem;
-  border: none;
-  border-radius: var(--ambiance-radius-sm);
-  background-color: var(--ambiance-primary);
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: background-color 150ms ease;
-}
-
-.auth-form .btn:hover {
-  background-color: var(--ambiance-primary-dark);
-}
-
-.auth-form .btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.auth-form .error {
-  margin-top: 1rem;
-  padding: 0.7rem 0.9rem;
-  border-radius: var(--ambiance-radius-sm);
-  background-color: var(--ambiance-animated-soft);
-  color: var(--ambiance-animated);
-  font-size: 0.88rem;
-}
-
-.auth-form p {
-  margin-top: 1.5rem;
+.account-description {
+  font-size: 1.1rem;
+  color: #6f7f7b;
   margin-bottom: 0;
-  color: var(--ambiance-text-muted);
-  font-size: 0.88rem;
-  text-align: center;
 }
 
-.auth-form p button {
-  border: none;
-  background: none;
-  padding: 0;
-  color: var(--ambiance-primary);
+.account-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.75rem;
+}
+
+.account-card {
+  background: white;
+  border: 1px solid #dde9e3;
+  border-radius: 20px;
+  padding: 2rem;
+  min-height: 240px;
+
+  display: flex;
+  flex-direction: column;
+
+  text-decoration: none;
+  color: inherit;
+
+  transition: 0.2s ease;
+}
+
+.account-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.08);
+  color: inherit;
+}
+
+.account-card-icon {
+  width: 50px;
+  height: 50px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 14px;
+
+  background: #eaf6f0;
+
+  color: #3f9e78;
+
+  font-size: 1.4rem;
+
+  margin-bottom: 1.5rem;
+}
+
+.account-card h2 {
+  margin-bottom: 0.75rem;
+
+  font-size: 1.6rem;
+
   font-weight: 700;
-  cursor: pointer;
+
+  color: #233538;
 }
 
-.auth-form p button:hover {
-  color: var(--ambiance-primary-dark);
-  text-decoration: underline;
+.account-card p {
+  color: #6e7d7a;
+
+  line-height: 1.7;
+
+  margin-bottom: auto;
+}
+
+.account-card-link {
+  margin-top: 2rem;
+
+  color: #3f9e78;
+
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .account-page {
+    padding: 2rem 1rem;
+  }
+
+  .account-header h1 {
+    font-size: 2.3rem;
+  }
+
+  .account-grid {
+    grid-template-columns: 1fr;
+  }
 }
