@@ -18,12 +18,17 @@ function MapView({ locations }) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
+
         {locations.map((location) => (
-          <LocationMarker
-            key={location.id}
-            location={location}
-          />
-        ))}
+  <LocationMarker
+    key={
+      location.idlocation ??
+      location.id ??
+      location._id
+    }
+    location={location}
+  />
+))}
       </MapContainer>
     </div>
   );
