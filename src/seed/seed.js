@@ -5,14 +5,32 @@ const connectDB = require("../config/db");
 const Device = require("../models/Device");
 const Measurement = require("../models/Measurement");
 const Observation = require("../models/Observation");
+const Location = require("../models/Location");
 
 const seedData = async () => {
   try {
     await connectDB();
 
-    await Device.deleteMany();
     await Measurement.deleteMany();
     await Observation.deleteMany();
+    await Device.deleteMany();
+    await Location.deleteMany();
+
+    await Location.insertMany([
+  {
+    idlocation: "bibliotheque_udem",
+    name: "Bibliothèque UdeM",
+    latitude: 45.5048,
+    longitude: -73.6135,
+  },
+  {
+    idlocation: "cafeteria_udem",
+    name: "Cafétéria UdeM",
+    latitude: 45.5052,
+    longitude: -73.6129,
+  },
+]);
+
 
     const device = await Device.create({
       name: "telephone_reine",

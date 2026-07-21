@@ -1,6 +1,6 @@
 function getCalmLocationsCount(locations) {
   return locations.filter(
-    (location) => location.classification === "calm"
+    (location) => location.summary?.ambianceLevel === "calm"
   ).length;
 }
 
@@ -10,7 +10,13 @@ function getMostRecentUpdate(locations) {
   }
 
   return locations.reduce((mostRecent, location) => {
-    const currentDate = new Date(location.updatedAt);
+    const timestamp = location.summary?.latestTimestamp;
+
+    if (!timestamp) {
+      return mostRecent;
+    }
+
+    const currentDate = new Date(timestamp);
 
     if (Number.isNaN(currentDate.getTime())) {
       return mostRecent;
@@ -44,7 +50,13 @@ function formatLastUpdate(date) {
 
   const differenceHours = Math.floor(differenceMinutes / 60);
 
-  return `Dernière mise à jour il y a ${differenceHours} h`;
+  if (differenceHours < 24) {
+    return `Dernière mise à jour il y a ${differenceHours} h`;
+  }
+
+  const differenceDays = Math.floor(differenceHours / 24);
+
+  return `Dernière mise à jour il y a ${differenceDays} j`;
 }
 
 function getCalmAvailabilityPresentation(calmCount) {
@@ -78,16 +90,27 @@ function getCalmAvailabilityPresentation(calmCount) {
 }
 
 function CurrentAmbianceBanner({ locations = [] }) {
-  const calmCount = getCalmLocationsCount(locations);
-  const presentation = getCalmAvailabilityPresentation(calmCount);
-  const lastUpdate = getMostRecentUpdate(locations);
+  const validLocations = locations.filter(
+    (location) => location.summary
+  );
+
+  const calmCount = getCalmLocationsCount(validLocations);
+
+  const presentation =
+    getCalmAvailabilityPresentation(calmCount);
+
+  const lastUpdate =
+    getMostRecentUpdate(validLocations);
 
   return (
     <section
       className={`current-ambiance-banner banner-${presentation.classification}`}
       aria-labelledby="current-ambiance-title"
     >
-      <div className="current-ambiance-icon" aria-hidden="true">
+      <div
+        className="current-ambiance-icon"
+        aria-hidden="true"
+      >
         {presentation.icon}
       </div>
 
@@ -96,7 +119,10 @@ function CurrentAmbianceBanner({ locations = [] }) {
           Ambiance générale actuelle
         </p>
 
-        <h2 id="current-ambiance-title" className="h4 fw-bold mb-2">
+        <h2
+          id="current-ambiance-title"
+          className="h4 fw-bold mb-2"
+        >
           {presentation.title}
         </h2>
 
@@ -107,7 +133,10 @@ function CurrentAmbianceBanner({ locations = [] }) {
 
       <div className="current-ambiance-meta">
         <p className="small mb-0">
-          <i className="bi bi-clock me-1" aria-hidden="true" />
+          <i
+            className="bi bi-clock me-1"
+            aria-hidden="true"
+          />
           {formatLastUpdate(lastUpdate)}
         </p>
       </div>

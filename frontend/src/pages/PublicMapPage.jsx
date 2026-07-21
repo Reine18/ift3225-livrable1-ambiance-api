@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 
 import CurrentAmbianceBanner from "../components/ambiance/CurrentAmbianceBanner";
@@ -7,6 +8,7 @@ import LocationCard from "../components/map/LocationCard";
 import MapLegend from "../components/map/MapLegend";
 import MapView from "../components/map/MapView";
 import useLocations from "../hooks/useLocations";
+import { getAmbianceSummary } from "../services/ambianceService";
 
 function PublicMapPage() {
   const {
@@ -15,21 +17,68 @@ function PublicMapPage() {
     error,
   } = useLocations();
 
+  const [summaries, setSummaries] = useState({});
+
+  useEffect(() => {
+    async function loadSummaries() {
+      const results = await Promise.all(
+        locations.map(async (location) => {
+          try {
+            const summary = await getAmbianceSummary(
+              location.idlocation
+            );
+
+            return [location.idlocation, summary];
+          } catch (requestError) {
+            return [location.idlocation, null];
+          }
+        })
+      );
+
+      setSummaries(Object.fromEntries(results));
+    }
+
+    if (locations.length > 0) {
+      loadSummaries();
+    }
+  }, [locations]);
+
+  const locationsWithSummaries = locations.map((location) => ({
+    ...location,
+    summary: summaries[location.idlocation] ?? null,
+  }));
+
   return (
     <>
       <HeroSection />
 
       <section id="carte" className="ambiance-section">
         <Container>
+          {isLoading && (
+            <p className="text-secondary">
+              Chargement des lieux...
+            </p>
+          )}
+
+          {error && (
+            <p className="text-danger">
+              {error}
+            </p>
+          )}
+
           <div className="mb-4">
-            <CurrentAmbianceBanner locations={locations} />
+            <CurrentAmbianceBanner
+              locations={locationsWithSummaries}
+            />
           </div>
 
           <div className="mb-4">
-            <StatsCards locations={locations} />
+            <StatsCards
+              locations={locationsWithSummaries}
+            />
           </div>
 
-          <MapView locations={locations} />
+          <MapView locations={locationsWithSummaries} />
 
           <MapLegend />
 
@@ -47,8 +96,18 @@ function PublicMapPage() {
 
             <Row className="g-4">
               {locations.map((location) => (
-                <Col key={location.id} xs={12} md={6} lg={4}>
-                  <LocationCard location={location} />
+                <Col
+                  key={location.idlocation}
+                  xs={12}
+                  md={6}
+                  lg={4}
+                >
+                  <LocationCard
+                    location={location}
+                    summary={
+                      summaries[location.idlocation] ?? null
+                    }
+                  />
                 </Col>
               ))}
             </Row>

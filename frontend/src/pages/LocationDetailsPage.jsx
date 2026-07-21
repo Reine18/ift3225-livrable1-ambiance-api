@@ -4,22 +4,48 @@ import { Link, useParams } from "react-router-dom";
 import AmbianceBadge from "../components/ambiance/AmbianceBadge";
 import FavoriteButton from "../components/favorites/FavoriteButton";
 import SummaryCard from "../components/ambiance/SummaryCard";
+
 import EmptyState from "../components/feedback/EmptyState";
-import { getAmbiancePresentation } from "../utils/ambiancePresentation";
-
-// TODO API : remplacer les données mockées par les données
-// retournées par useLocationDetails(locationId).
-import { mockLocationDetails } from "../utils/mockLocationDetails";
-
 import SoundChart from "../components/ambiance/SoundChart";
 import ObservationCard from "../components/ambiance/ObservationCard";
 import QuietHoursTable from "../components/ambiance/QuietHoursTable";
 
+import useLocations from "../hooks/useLocations";
+import useLocationDetails from "../hooks/useLocationDetails";
+import { getAmbiancePresentation } from "../utils/ambiancePresentation";
+
+function normalizeClassification(ambianceLevel) {
+  switch (ambianceLevel) {
+    case "calm":
+      return "calm";
+
+    case "normal":
+      return "moderate";
+
+    case "busy":
+    case "noisy":
+      return "animated";
+
+    default:
+      return "stale";
+  }
+}
+
 function formatUpdatedAt(updatedAt) {
+  if (!updatedAt) {
+    return "Aucune mise à jour disponible";
+  }
+
+  const updatedDate = new Date(updatedAt);
+
+  if (Number.isNaN(updatedDate.getTime())) {
+    return "Date de mise à jour indisponible";
+  }
+
   const differenceMinutes = Math.max(
     0,
     Math.floor(
-      (Date.now() - new Date(updatedAt).getTime()) / 60000
+      (Date.now() - updatedDate.getTime()) / 60000
     )
   );
 
@@ -32,17 +58,64 @@ function formatUpdatedAt(updatedAt) {
   }
 
   const differenceHours = Math.floor(differenceMinutes / 60);
-  return `Mise à jour il y a ${differenceHours} h`;
+
+  if (differenceHours < 24) {
+    return `Mise à jour il y a ${differenceHours} h`;
+  }
+
+  const differenceDays = Math.floor(differenceHours / 24);
+
+  return `Mise à jour il y a ${differenceDays} j`;
 }
 
 function LocationDetailsPage() {
   const { locationId } = useParams();
-  
-  // TODO API : supprimer cette lecture lorsque
-// LocationDetailsPage utilisera useLocationDetails().
-const location = mockLocationDetails[locationId];
 
+  const {
+    locations,
+    isLoading: areLocationsLoading,
+    error: locationsError,
+  } = useLocations();
 
+  const {
+    summary,
+    history,
+    quietHours,
+    isLoading: areDetailsLoading,
+    error: detailsError,
+    reload,
+  } = useLocationDetails(locationId);
+
+  const location = locations.find(
+    (item) =>
+      item.idlocation === locationId ||
+      item.id === locationId ||
+      item._id === locationId
+  );
+
+  const isLoading =
+    areLocationsLoading || areDetailsLoading;
+
+  if (isLoading) {
+    return (
+      <Container className="py-5">
+        <p className="text-secondary mb-0">
+          Chargement du portrait du lieu...
+        </p>
+      </Container>
+    );
+  }
+
+  if (locationsError) {
+    return (
+      <Container className="py-5">
+        <EmptyState
+          title="Impossible de charger les lieux"
+          message={locationsError}
+        />
+      </Container>
+    );
+  }
 
   if (!location) {
     return (
@@ -55,9 +128,45 @@ const location = mockLocationDetails[locationId];
     );
   }
 
-  const presentation = getAmbiancePresentation(
-    location.classification
+  if (detailsError || !summary) {
+    return (
+      <Container className="py-5">
+        <EmptyState
+          title="Portrait indisponible"
+          message={
+            detailsError ??
+            "Aucune donnée d’ambiance n’est disponible pour ce lieu."
+          }
+        />
+
+        <div className="text-center mt-3">
+          <button
+            type="button"
+            className="btn btn-outline-secondary"
+            onClick={reload}
+          >
+            Réessayer
+          </button>
+        </div>
+      </Container>
+    );
+  }
+
+  const classification = normalizeClassification(
+    summary.ambianceLevel
   );
+
+  const presentation =
+    getAmbiancePresentation(classification);
+
+  const address =
+    location.address ??
+    `${location.latitude}, ${location.longitude}`;
+
+  const averageSoundLevel =
+    typeof summary.averageSoundLevel === "number"
+      ? summary.averageSoundLevel.toFixed(2)
+      : "Indisponible";
 
   return (
     <div className="location-details-page">
@@ -78,7 +187,7 @@ const location = mockLocationDetails[locationId];
                   className="bi bi-geo-alt me-1"
                   aria-hidden="true"
                 />
-                {location.address}
+                {address}
               </p>
 
               <h1 className="display-5 fw-bold mb-3">
@@ -87,7 +196,7 @@ const location = mockLocationDetails[locationId];
 
               <div className="d-flex flex-wrap align-items-center gap-3">
                 <AmbianceBadge
-                  classification={location.classification}
+                  classification={classification}
                   size="large"
                 />
 
@@ -98,7 +207,9 @@ const location = mockLocationDetails[locationId];
                     className="bi bi-clock me-1"
                     aria-hidden="true"
                   />
-                  {formatUpdatedAt(location.updatedAt)}
+                  {formatUpdatedAt(
+                    summary.latestTimestamp
+                  )}
                 </span>
               </div>
             </div>
@@ -144,8 +255,8 @@ const location = mockLocationDetails[locationId];
               <SummaryCard
                 icon="bi-soundwave"
                 label="Niveau sonore moyen"
-                value={location.averageSoundLevel.toFixed(2)}
-                description="Valeur non calibrée fournie par Phyphox"
+                value={averageSoundLevel}
+                description="Valeur absolue non calibrée fournie par Phyphox"
               />
             </Col>
 
@@ -153,7 +264,7 @@ const location = mockLocationDetails[locationId];
               <SummaryCard
                 icon="bi-activity"
                 label="Mesures collectées"
-                value={location.measurementsCount}
+                value={summary.measurementsCount ?? 0}
                 description="Mesures enregistrées pour ce lieu"
               />
             </Col>
@@ -162,22 +273,26 @@ const location = mockLocationDetails[locationId];
               <SummaryCard
                 icon="bi-chat-left-text"
                 label="Observations"
-                value={location.observationsCount}
+                value={summary.observationsCount ?? 0}
                 description="Contributions environnementales"
               />
             </Col>
           </Row>
 
           <div className="mt-5">
-            <SoundChart data={location.history} />
+            <SoundChart data={quietHours ?? []} />
           </div>
 
           <div className="mt-4">
-            <QuietHoursTable data={location.quietHours} />
+            <QuietHoursTable data={quietHours ?? []} />
           </div>
 
           <div className="mt-4">
-            <ObservationCard observation={location.latestObservation} />
+            <ObservationCard
+              observation={
+                summary.latestObservation ?? null
+              }
+            />
           </div>
         </Container>
       </section>

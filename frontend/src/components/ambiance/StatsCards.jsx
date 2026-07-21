@@ -33,22 +33,38 @@ const statConfig = [
 
 function StatsCards({ locations = [] }) {
   const counts = locations.reduce(
-    (result, location) => {
-      result.total += 1;
+  (result, location) => {
+    result.total++;
 
-      if (Object.hasOwn(result, location.classification)) {
-        result[location.classification] += 1;
-      }
+    const ambiance = location.summary?.ambianceLevel;
 
-      return result;
-    },
-    {
-      total: 0,
-      calm: 0,
-      moderate: 0,
-      animated: 0,
+    switch (ambiance) {
+      case "calm":
+        result.calm++;
+        break;
+
+      case "normal":
+        result.moderate++;
+        break;
+
+      case "busy":
+      case "noisy":
+        result.animated++;
+        break;
+
+      default:
+        break;
     }
-  );
+
+    return result;
+  },
+  {
+    total: 0,
+    calm: 0,
+    moderate: 0,
+    animated: 0,
+  }
+);
 
   return (
     <Row className="g-3">
