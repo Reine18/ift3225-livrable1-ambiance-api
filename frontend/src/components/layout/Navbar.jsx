@@ -31,15 +31,17 @@ function Navbar() {
         <BootstrapNavbar.Collapse id="ambiance-navigation">
           <Nav className="ms-auto align-items-lg-center gap-lg-2">
             <Nav.Link
-              href="#carte"
-              className={activeSection === "carte" ? "active" : ""}
-              onClick={() => setActiveSection("carte")}
-            >
-              Carte
-            </Nav.Link>
+                as={Link}
+                to="/"
+                className={activeSection === "carte" ? "active" : ""}
+                onClick={() => setActiveSection("carte")}
+              >
+                Carte
+              </Nav.Link>
 
             <Nav.Link
-              href="#about"
+              as={Link}
+              to="/#about"
               className={activeSection === "about" ? "active" : ""}
               onClick={() => setActiveSection("about")}
             >
