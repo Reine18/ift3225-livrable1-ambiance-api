@@ -28,4 +28,6 @@ const measurementSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Measurement", measurementSchema);
+module.exports =
+  mongoose.models.Measurement ||
+  mongoose.model("Measurement", measurementSchema);
