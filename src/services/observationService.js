@@ -57,6 +57,15 @@ async function getObservationsService() {
     .populate("deviceId", "name location")
     .sort({ createdAt: -1 });
 }
+const {
+  deleteCacheByPrefix,
+} = require("./cacheService");
+const observation = await Observation.create(observationData);
+
+deleteCacheByPrefix("GET:/observations");
+deleteCacheByPrefix("GET:/ambiance");
+
+return observation;
 
 module.exports = {
   createObservationService,

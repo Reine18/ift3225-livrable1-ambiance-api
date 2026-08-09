@@ -1,12 +1,16 @@
 const Measurement = require("../models/Measurement");
+const {
+  deleteCacheByPrefix,
+} = require("./cacheService");
 
-//creat une error avec un message et son code http
+// Crée une erreur avec un message et un code HTTP.
 function createError(message, statusCode) {
   const error = new Error(message);
   error.statusCode = statusCode;
   return error;
 }
-// valide les donneees et cree une mesure 
+
+// Valide les données, crée une mesure et invalide le cache.
 async function createMeasurementService({
   deviceId,
   soundLevel,
@@ -31,9 +35,15 @@ async function createMeasurementService({
     timestamp: timestamp || Date.now(),
   });
 
+  // Supprime les anciennes réponses devenues obsolètes.
+  deleteCacheByPrefix("GET:/api/measurements");
+  deleteCacheByPrefix("GET:/api/ambiance");
+
   return measurement;
 }
-// on recupere toutes les mesures et ajoute les info du device et trie les resultats par date de creation
+
+// Récupère les mesures, ajoute les informations du device
+// et trie les résultats par date de création.
 async function getMeasurementsService() {
   return Measurement.find()
     .populate("deviceId", "name location")
