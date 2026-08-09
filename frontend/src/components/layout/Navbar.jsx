@@ -41,6 +41,15 @@ function Navbar() {
 
             <Nav.Link
               as={Link}
+              to="/recommendation"
+              className={activeSection === "recommendation" ? "active" : ""}
+              onClick={() => setActiveSection("recommendation")}
+            >
+              Recommandation
+            </Nav.Link>
+
+            <Nav.Link
+              as={Link}
               to="/#about"
               className={activeSection === "about" ? "active" : ""}
               onClick={() => setActiveSection("about")}

@@ -6,6 +6,8 @@ const {
   calculateAmbianceForecast,
 } = require("../services/ambianceService");
 
+const { calculateAmbianceHistory } = require("../services/ambianceService");
+
 // GET /ambiance/:location/summary
 const getAmbianceSummary = async (req, res) => {
   try {
@@ -49,6 +51,11 @@ const getAmbianceHistory = async (req, res) => {
     const measurements = await Measurement.find()
       .populate("deviceId", "location")
       .sort({ timestamp: -1 });
+
+    const locationMeasurements = calculateAmbianceHistory(
+      location,
+      measurements
+    );
       
     return res.status(200).json({
       success: true,
@@ -101,6 +108,10 @@ const getAmbianceForecast = async (req, res) => {
   try {
     const { location } = req.params;
     const requestedHours = Number(req.query.hours) || 6;
+
+    const measurements = await Measurement.find()
+      .populate("deviceId", "location")
+      .sort({ timestamp: -1 });
 
     const forecast = calculateAmbianceForecast(
       location,

@@ -7,6 +7,7 @@ import ObservationForm from "./components/observation/ObservationForm";
 import FavoritesPage from "./pages/FavoritesPage";
 import PlacesPage from "./pages/PlacesPage";
 import ContributionsPage from "./pages/ContributionsPage";
+import RecommendationPage from "./pages/RecommendationPage";
 import LocationDetailsPage from "./pages/LocationDetailsPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import PublicMapPage from "./pages/PublicMapPage";
@@ -28,6 +29,7 @@ function App() {
           <Route path="/favorites" element={<FavoritesPage />} />
           <Route path="/lieux" element={<PlacesPage />} />
           <Route path="/contributions" element={<ContributionsPage />} />
+          <Route path="/recommendation" element={<RecommendationPage />}/>
 
           <Route path="*" element={<NotFoundPage />} />
         </Route>

@@ -1,0 +1,113 @@
+.recommendation-page {
+  padding: 50px 20px;
+  background-color: #f7f9f7;
+  min-height: 100vh;
+}
+
+.recommendation-container {
+  max-width: 1100px;
+  margin: auto;
+}
+
+.recommendation-container h1 {
+  margin-bottom: 10px;
+}
+
+.recommendation-description {
+  color: #666;
+  margin-bottom: 30px;
+}
+
+/* Grille des choix */
+.recommendation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+/* Carte d'un choix */
+.recommendation-card {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+}
+
+.recommendation-card:hover {
+  border-color: #198754;
+}
+
+.recommendation-card.selected {
+  border: 2px solid #198754;
+}
+
+.recommendation-card h2 {
+  font-size: 20px;
+}
+
+.recommendation-card p {
+  color: #666;
+}
+
+.recommendation-emoji {
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+
+.recommendation-card .selected-text {
+  color: #198754;
+}
+
+/* Bouton pour chercher un lieu */
+.recommendation-button {
+  margin-top: 25px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  background-color: #198754;
+  color: white;
+  cursor: pointer;
+}
+
+.recommendation-button:disabled {
+  background-color: #9abda9;
+  cursor: not-allowed;
+}
+
+/* Résultat de la recommandation */
+.recommendation-result {
+  margin-top: 30px;
+  padding: 25px;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+}
+
+.recommendation-result h2 {
+  margin-bottom: 15px;
+}
+
+.recommendation-link {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px 16px;
+  background-color: #198754;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.recommendation-link:hover {
+  background-color: #146c43;
+  color: white;
+}
+
+.recommendation-message {
+  margin-top: 15px;
+  color: #666;
+}
+
+.recommendation-error {
+  color: #c0392b;
+}
