@@ -63,4 +63,6 @@ const observationSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Observation", observationSchema);
+module.exports =
+  mongoose.models.Observation ||
+  mongoose.model("Observation", observationSchema);

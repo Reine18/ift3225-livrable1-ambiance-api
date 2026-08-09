@@ -1,40 +1,23 @@
-const crypto = require("crypto");
-const Device = require("../models/Device");
+const {
+  createDeviceService,
+  getDevicesService,
+} = require("../services/deviceService");
 
 // POST /devices
 const createDevice = async (req, res) => {
   try {
-    const { name, location } = req.body;
-
-    if (!name || !location) {
-      return res.status(400).json({
-        success: false,
-        message: "Les champs name et location sont requis.",
-      });
-    }
-
-    const apiKey = crypto.randomBytes(32).toString("hex");
-
-    const device = await Device.create({
-      name,
-      location,
-      apiKey,
-    });
+    const device = await createDeviceService(req.body || {});
 
     return res.status(201).json({
       success: true,
-      data: {
-        id: device._id,
-        name: device.name,
-        location: device.location,
-        apiKey: device.apiKey,
-      },
+      data: device,
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.status(error.statusCode || 500).json({
       success: false,
-      message: "Erreur lors de la création du device.",
-      error: error.message,
+      message:
+        error.message ||
+        "Erreur lors de la création du device.",
     });
   }
 };
@@ -42,7 +25,7 @@ const createDevice = async (req, res) => {
 // GET /devices
 const getDevices = async (req, res) => {
   try {
-    const devices = await Device.find().select("-apiKey");
+    const devices = await getDevicesService();
 
     return res.status(200).json({
       success: true,
@@ -52,8 +35,9 @@ const getDevices = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: "Erreur lors de la récupération des devices.",
-      error: error.message,
+      message:
+        error.message ||
+        "Erreur lors de la récupération des devices.",
     });
   }
 };

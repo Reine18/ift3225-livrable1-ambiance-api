@@ -1,122 +1,38 @@
-const bcrypt = require("bcryptjs");
-const User = require("../models/User");
-const jwt = require("jsonwebtoken");
-
-const generateToken = (user) => {
-  return jwt.sign(
-    {
-      email: user.email,
-      role: user.role,
-      name: user.name,
-      id: user._id,
-    },
-    process.env.JWT_SECRET,
-    { expiresIn: "1h" }
-  );
-};
+const {
+  registerUserService,
+  loginUserService,
+} = require("../services/userService");
 
 const registerUser = async (req, res) => {
   try {
-    const { email, password, name } = req.body;
-
-    if (!email || !password || !name) {
-      return res.status(400).json({
-        success: false,
-        message: "Email, name and password are required.",
-      });
-    }
-
-    const existingUser = await User.findOne({ email });
-
-    if (existingUser) {
-      return res.status(409).json({
-        success: false,
-        message: "A user with this email already exists.",
-      });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-
-    const user = await User.create({
-      name,
-      email,
-      password : hashedPassword,
-    });
-
-    const token = generateToken(user);
+    const result = await registerUserService(req.body);
 
     return res.status(201).json({
       success: true,
       message: "L'utilisateur a été créé avec succès.",
-      data: {
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-        },
-        token,
-      },
+      data: result,
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.status(error.statusCode || 500).json({
       success: false,
-      message: "Erreur lors de l'inscription.",
-      error: error.message,
+      message: error.message || "Erreur lors de l'inscription.",
     });
   }
 };
 
 const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Email and password are required.",
-      });
-    }
-
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "Email invalide.",
-      });
-    }
-
-    const passwordIsMatch = await bcrypt.compare(password, user.password);
-
-    if (!passwordIsMatch) {
-      return res.status(401).json({
-        success: false,
-        message: "Mot de passe invalide.",
-      });
-    }
-
-    const token = generateToken(user);
+    const result = await loginUserService(req.body);
 
     return res.status(200).json({
       success: true,
       message: "Connexion réussie.",
-      data: {
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-        },
-        token,
-      },
+      data: result,
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.status(error.statusCode || 500).json({
       success: false,
-      message: "Erreur lors de la connexion.",
-      error: error.message,
+      message: error.message || "Erreur lors de la connexion.",
     });
   }
 };
