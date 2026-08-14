@@ -1,11 +1,28 @@
 const express = require("express");
-const router = express.Router();
+const cacheMiddleware = require("../middlewares/cacheMiddleware");
+
 const {
   getLocations,
   createLocation,
 } = require("../controllers/locationController");
 
-router.get("/", getLocations);
-router.post("/", createLocation);
+const router = express.Router();
+//temporaire
+// Lecture publique : cache pendant une heure.
+router.get(
+  "/",
+  (req, res, next) => {
+    console.log("LOCATION CACHE ROUTE EXECUTED");
+    next();
+  },
+  cacheMiddleware(60 * 60 * 1000),
+  getLocations
+);
+
+// Écriture : pas de cache.
+router.post(
+  "/",
+  createLocation
+);
 
 module.exports = router;

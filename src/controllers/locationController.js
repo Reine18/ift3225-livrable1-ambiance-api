@@ -1,5 +1,7 @@
 const Location = require("../models/Location");
-
+const {
+  deleteCacheByPrefix,
+} = require("../services/cacheService");
 const getLocations = async (req, res) => {
   try {
     const locations = await Location.find()
@@ -46,13 +48,16 @@ const createLocation = async (req, res) => {
     }
 
     const location = await Location.create({
-      idlocation,
-      name,
-      latitude,
-      longitude,
-    });
+  idlocation,
+  name,
+  latitude,
+  longitude,
+});
 
-    return res.status(201).json({
+// La liste des locations n'est plus à jour.
+deleteCacheByPrefix("GET:/locations");
+
+return res.status(201).json({
       success: true,
       message: "Lieu créé avec succès",
       data: location,
