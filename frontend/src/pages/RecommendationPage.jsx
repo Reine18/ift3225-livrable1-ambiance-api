@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import useLocations from "../hooks/useLocations";
 import { getAmbianceSummary } from "../services/ambianceService";
+import { trouverMeilleurLieu } from "../utils/recommendation";
 import "./RecommendationPage.css";
 
 function RecommendationPage() {
@@ -13,7 +14,7 @@ function RecommendationPage() {
   const [lieuTrouve, setLieuTrouve] = useState(null);
   const [msg, setMsg] = useState("");
 
-  // Les choix proposés à l'utilisateur
+
   const options = [
     {
       id: "study",
@@ -38,7 +39,7 @@ function RecommendationPage() {
     },
   ];
 
-  // Charge les informations d'ambiance de chaque lieu
+  // Charge les informations de chaque lieu
   useEffect(() => {
     async function chargerDonnees() {
       const temp = {};
@@ -60,7 +61,7 @@ function RecommendationPage() {
     }
   }, [locations]);
 
-  // Cherche le lieu qui correspond le mieux au choix
+  // Cherche le lieu qui correspond au choix
   function trouverLieu() {
     setLieuTrouve(null);
     setMsg("");
@@ -74,40 +75,15 @@ function RecommendationPage() {
       (option) => option.id === choix
     );
 
-    // Garde seulement les lieux qui correspondent
-    const lieuxOk = locations.filter((loc) => {
-      const info = donnees[loc.idlocation];
+    const meilleur = trouverMeilleurLieu(
+      locations,
+      donnees,
+      optionChoisie
+    );
 
-      if (!info) {
-        return false;
-      }
-
-      return optionChoisie.ambiance.includes(
-        info.ambianceLevel
-      );
-    });
-
-    if (lieuxOk.length === 0) {
+    if (!meilleur) {
       setMsg("Aucun lieu ne correspond à votre choix.");
       return;
-    }
-
-    // Le premier lieu correspondant devient le meilleur au départ
-    let meilleur = lieuxOk[0];
-
-    // Compare les dates pour garder les données les plus récentes
-    for (const loc of lieuxOk) {
-      const infoActuelle = donnees[loc.idlocation];
-      const infoMeilleur = donnees[meilleur.idlocation];
-
-      if (
-        infoActuelle.latestTimestamp &&
-        infoMeilleur.latestTimestamp &&
-        new Date(infoActuelle.latestTimestamp) >
-          new Date(infoMeilleur.latestTimestamp)
-      ) {
-        meilleur = loc;
-      }
     }
 
     setLieuTrouve(meilleur);
