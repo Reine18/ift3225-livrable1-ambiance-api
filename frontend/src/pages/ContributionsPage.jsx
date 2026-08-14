@@ -15,6 +15,9 @@ export default function ContributionsPage() {
         const response = await fetch("http://localhost:3000/observations");
         const result = await response.json();
 
+        console.log("user:", user);
+        console.log("observations:", result.data);
+
         if (!result.success) {
           setError("Impossible de charger vos contributions.");
           setLoading(false);
@@ -25,7 +28,7 @@ export default function ContributionsPage() {
         for (let i = 0; i < result.data.length; i++) {
           const obs = result.data[i];
 
-          if (obs.author && obs.author._id === user?.id) {
+          if (obs.author && obs.author === user?.id) {
             let locId = obs.location;
             let locName = obs.location;
 
