@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { getLocations } from "../services/locationsService";
+import Loading from "../components/feedback/Loading";
+import Error from "../components/feedback/Error";
+import EmptyState from "../components/feedback/EmptyState";
 import "./favoritesPage.css";
 
 export default function FavoritesPage() {
@@ -9,7 +13,9 @@ export default function FavoritesPage() {
 
   useEffect(() => {
     async function fetchFavorites() {
-      const favoriteIds = JSON.parse(localStorage.getItem("favorites") || "[]");
+      const favoriteIds = JSON.parse(
+        localStorage.getItem("favorites") || "[]"
+      );
 
       if (favoriteIds.length === 0) {
         setLoading(false);
@@ -17,18 +23,13 @@ export default function FavoritesPage() {
       }
 
       try {
-        const response = await fetch("http://localhost:3000/locations");
-        const result = await response.json();
-
-        if (!result.success) {
-          setError("Impossible de charger vos favoris.");
-          setLoading(false);
-          return;
-        }
+        const locations = await getLocations();
 
         const matched = [];
-        for (let i = 0; i < result.data.length; i++) {
-          const loc = result.data[i];
+
+        for (let i = 0; i < locations.length; i++) {
+          const loc = locations[i];
+
           if (
             favoriteIds.includes(loc._id) ||
             favoriteIds.includes(loc.idlocation)
@@ -49,46 +50,48 @@ export default function FavoritesPage() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="favorites-page">
-        <h1>Mes favoris</h1>
-        <p>Chargement...</p>
-      </div>
-    );
-  }
+  return (
+    <div className="favorites-page">
+      <h1>Mes favoris</h1>
+      <Loading message="Chargement de vos favoris..." />
+    </div>
+  );
+}
 
   if (error) {
-    return (
-      <div className="favorites-page">
-        <h1>Mes favoris</h1>
-        <p>{error}</p>
-      </div>
-    );
-  }
+  return (
+    <div className="favorites-page">
+      <h1>Mes favoris</h1>
+      <Error message={error} />
+    </div>
+  );
+}
 
   if (favorites.length === 0) {
-    return (
-      <div className="favorites-page">
-        <h1>Mes favoris</h1>
-        <p>Vous n'avez pas encore de lieux favoris.</p>
-      </div>
-    );
-  }
-
-  const items = [];
-  for (let i = 0; i < favorites.length; i++) {
-    const loc = favorites[i];
-    items.push(
-      <li key={loc._id || loc.idlocation}>
-        <Link to={`/locations/${loc._id || loc.idlocation}`}>{loc.name}</Link>
-      </li>,
-    );
-  }
+  return (
+    <div className="favorites-page">
+      <h1>Mes favoris</h1>
+      <EmptyState
+        title="Aucun favori"
+        message="Vous n'avez pas encore de lieux favoris."
+      />
+    </div>
+  );
+}
 
   return (
     <div className="favorites-page">
       <h1>Mes favoris</h1>
-      <ul>{items}</ul>
+
+      <ul>
+        {favorites.map((loc) => (
+          <li key={loc._id || loc.idlocation}>
+            <Link to={`/locations/${loc._id || loc.idlocation}`}>
+              {loc.name}
+            </Link>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

@@ -5,68 +5,25 @@ import AmbianceBadge from "../components/ambiance/AmbianceBadge";
 import FavoriteButton from "../components/favorites/FavoriteButton";
 import SummaryCard from "../components/ambiance/SummaryCard";
 
-import EmptyState from "../components/feedback/EmptyState";
 import SoundChart from "../components/ambiance/SoundChart";
 import ObservationCard from "../components/ambiance/ObservationCard";
 import QuietHoursTable from "../components/ambiance/QuietHoursTable";
 
 import useLocations from "../hooks/useLocations";
 import useLocationDetails from "../hooks/useLocationDetails";
-import { getAmbiancePresentation } from "../utils/ambiancePresentation";
+import {
+  getAmbiancePresentation,
+  normalizeClassification,
+} from "../utils/ambiancePresentation";
 
-function normalizeClassification(ambianceLevel) {
-  switch (ambianceLevel) {
-    case "calm":
-      return "calm";
+import Loading from "../components/feedback/Loading";
+import Error from "../components/feedback/Error";
+import EmptyState from "../components/feedback/EmptyState";
 
-    case "normal":
-      return "moderate";
+import { formatUpdatedAt } from "../utils/freshness";
 
-    case "busy":
-    case "noisy":
-      return "animated";
 
-    default:
-      return "stale";
-  }
-}
 
-function formatUpdatedAt(updatedAt) {
-  if (!updatedAt) {
-    return "Aucune mise à jour disponible";
-  }
-
-  const updatedDate = new Date(updatedAt);
-
-  if (Number.isNaN(updatedDate.getTime())) {
-    return "Date de mise à jour indisponible";
-  }
-
-  const differenceMinutes = Math.max(
-    0,
-    Math.floor(
-      (Date.now() - updatedDate.getTime()) / 60000
-    )
-  );
-
-  if (differenceMinutes < 1) {
-    return "Mise à jour à l’instant";
-  }
-
-  if (differenceMinutes < 60) {
-    return `Mise à jour il y a ${differenceMinutes} min`;
-  }
-
-  const differenceHours = Math.floor(differenceMinutes / 60);
-
-  if (differenceHours < 24) {
-    return `Mise à jour il y a ${differenceHours} h`;
-  }
-
-  const differenceDays = Math.floor(differenceHours / 24);
-
-  return `Mise à jour il y a ${differenceDays} j`;
-}
 
 function LocationDetailsPage() {
   const { locationId } = useParams();
@@ -79,7 +36,6 @@ function LocationDetailsPage() {
 
   const {
     summary,
-    history,
     quietHours,
     isLoading: areDetailsLoading,
     error: detailsError,
@@ -97,14 +53,12 @@ function LocationDetailsPage() {
     areLocationsLoading || areDetailsLoading;
 
   if (isLoading) {
-    return (
-      <Container className="py-5">
-        <p className="text-secondary mb-0">
-          Chargement du portrait du lieu...
-        </p>
-      </Container>
-    );
-  }
+  return (
+    <Container className="py-5">
+      <Loading message="Chargement du portrait du lieu..." />
+    </Container>
+  );
+}
 
   if (locationsError) {
     return (
@@ -156,7 +110,7 @@ function LocationDetailsPage() {
     summary.ambianceLevel
   );
 
-  const presentation =
+  const presentation = 
     getAmbiancePresentation(classification);
 
   const address =

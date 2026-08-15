@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { createObservation } from "../../services/observationService";
 import "./observationForm.css";
 
 export default function ObservationForm() {
@@ -11,41 +12,46 @@ export default function ObservationForm() {
   const [notes, setNotes] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(e) {
-  e.preventDefault();
-  setError("");
-  setSuccess(false);
+    e.preventDefault();
 
-  if (!location || !vibe) {
-    setError("Le lieu et l'ambiance sont requis.");
-    return;
-  }
+    setError("");
+    setSuccess(false);
 
-  try {
-    const response = await fetch("http://localhost:3000/observations", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ location, vibe, sourceProximity, notes }),
-    });
-
-    const result = await response.json();
-
-    if (!result.success) {
-      setError(result.message || "Impossible de soumettre l'observation.");
+    if (!location || !vibe) {
+      setError("Le lieu et l'ambiance sont requis.");
       return;
     }
 
-    setSuccess(true);
-    setLocation("");
-    setNotes("");
-  } catch (err) {
-    setError("Impossible de soumettre l'observation.");
+    try {
+      setIsSubmitting(true);
+
+      await createObservation(
+        {
+          location,
+          vibe,
+          sourceProximity,
+          notes,
+        },
+        token
+      );
+
+      setSuccess(true);
+      setLocation("");
+      setVibe("calm");
+      setSourceProximity("near");
+      setNotes("");
+    } catch (err) {
+      setError(
+        err.response?.data?.message ??
+          "Impossible de soumettre l'observation."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   }
-}
 
   const handleReset = () => {
     setLocation("");
@@ -107,20 +113,32 @@ export default function ObservationForm() {
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Notes additionnelles"
-          ></textarea>
+          />
 
           {error && <p className="error">{error}</p>}
-          {success && <p className="success">Observation enregistrée !</p>}
 
-          <button type="reset" onClick={handleReset}>
+          {success && (
+            <p className="success">
+              Observation enregistrée !
+            </p>
+          )}
+
+          <button
+            type="reset"
+            onClick={handleReset}
+            disabled={isSubmitting}
+          >
             Réinitialiser
           </button>
-          <button type="submit" onClick={handleSubmit}>
-            Soumettre
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Envoi..." : "Soumettre"}
           </button>
         </form>
       </div>
     </div>
   );
 }
- 

@@ -1,10 +1,18 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+
 import { useAuth } from "../context/AuthContext";
+import { getObservations } from "../services/observationService";
+
+import Loading from "../components/feedback/Loading";
+import Error from "../components/feedback/Error";
+import EmptyState from "../components/feedback/EmptyState";
+
 import "./accountList.css";
 
 export default function ContributionsPage() {
   const { user } = useAuth();
+
   const [observations, setObservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -12,29 +20,41 @@ export default function ContributionsPage() {
   useEffect(() => {
     async function fetchObservations() {
       try {
-        const response = await fetch("http://localhost:3000/observations");
-        const result = await response.json();
+        setLoading(true);
+        setError("");
 
-        console.log("user:", user);
-        console.log("observations:", result.data);
-
-        if (!result.success) {
-          setError("Impossible de charger vos contributions.");
-          setLoading(false);
-          return;
-        }
+        const allObservations =
+          await getObservations();
 
         const filtered = [];
-        for (let i = 0; i < result.data.length; i++) {
-          const obs = result.data[i];
 
-          if (obs.author && obs.author === user?.id) {
+        for (
+          let i = 0;
+          i < allObservations.length;
+          i++
+        ) {
+          const obs = allObservations[i];
+
+          const authorId =
+            typeof obs.author === "object"
+              ? obs.author?._id
+              : obs.author;
+
+          if (authorId === user?.id) {
             let locId = obs.location;
             let locName = obs.location;
 
             if (obs.locationId) {
-              locId = obs.locationId._id;
-              locName = obs.locationId.name;
+              if (
+                typeof obs.locationId === "object"
+              ) {
+                locId = obs.locationId._id;
+                locName =
+                  obs.locationId.name ??
+                  obs.location;
+              } else {
+                locId = obs.locationId;
+              }
             }
 
             filtered.push({
@@ -49,20 +69,28 @@ export default function ContributionsPage() {
 
         setObservations(filtered);
       } catch (err) {
-        setError("Impossible de charger vos contributions.");
+        setError(
+          "Impossible de charger vos contributions."
+        );
       } finally {
         setLoading(false);
       }
     }
 
-    fetchObservations();
+    if (user) {
+      fetchObservations();
+    } else {
+      setObservations([]);
+      setLoading(false);
+    }
   }, [user]);
 
   if (loading) {
     return (
       <div className="account-list-page">
         <h1>Mes contributions</h1>
-        <p>Chargement...</p>
+
+        <Loading message="Chargement de vos contributions..." />
       </div>
     );
   }
@@ -71,7 +99,8 @@ export default function ContributionsPage() {
     return (
       <div className="account-list-page">
         <h1>Mes contributions</h1>
-        <p>{error}</p>
+
+        <Error message={error} />
       </div>
     );
   }
@@ -80,27 +109,37 @@ export default function ContributionsPage() {
     return (
       <div className="account-list-page">
         <h1>Mes contributions</h1>
-        <p>Vous n'avez pas encore soumis d'observation.</p>
-      </div>
-    );
-  }
 
-  const items = [];
-  for (let i = 0; i < observations.length; i++) {
-    const obs = observations[i];
-    items.push(
-      <li key={obs.id}>
-        <Link to={`/locations/${obs.locationId}`}>{obs.locationName}</Link>
-        {" — "}
-        {obs.vibe} — {obs.notes}
-      </li>
+        <EmptyState
+          title="Aucune contribution"
+          message="Vous n'avez pas encore soumis d'observation."
+        />
+      </div>
     );
   }
 
   return (
     <div className="account-list-page">
       <h1>Mes contributions</h1>
-      <ul>{items}</ul>
+
+      <ul>
+        {observations.map((obs) => (
+          <li key={obs.id}>
+            <Link
+              to={`/locations/${obs.locationId}`}
+            >
+              {obs.locationName}
+            </Link>
+
+            {" — "}
+            {obs.vibe}
+
+            {obs.notes
+              ? ` — ${obs.notes}`
+              : ""}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

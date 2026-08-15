@@ -1,61 +1,28 @@
-import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+
 import { useAuth } from "../context/AuthContext";
+import useMyPlaces from "../hooks/useMyPlaces";
+
+import Loading from "../components/feedback/Loading";
+import Error from "../components/feedback/Error";
+import EmptyState from "../components/feedback/EmptyState";
+
 import "./accountList.css";
 
 export default function PlacesPage() {
-  const { user, token } = useAuth();
-  const [myPlaces, setMyPlaces] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const { user } = useAuth();
 
-  useEffect(() => {
-    async function fetchObservations() {
-      try {
-        const response = await fetch("http://localhost:3000/observations");
-        const result = await response.json();
+  const {
+    myPlaces,
+    isLoading,
+    error,
+  } = useMyPlaces(user);
 
-        if (!result.success) {
-          setError("Impossible de charger les lieux.");
-          setLoading(false);
-          return;
-        }
-
-        const seen = {};
-        const places = [];
-
-        for (let i = 0; i < result.data.length; i++) {
-          const obs = result.data[i];
-          if (obs.author && obs.author._id === user?.id) {
-            const locId = obs.locationId ? obs.locationId._id : obs.location;
-            if (!seen[locId]) {
-              seen[locId] = true;
-              places.push({
-                locationId: locId,
-                locationName: obs.locationId
-                  ? obs.locationId.name
-                  : obs.location,
-              });
-            }
-          }
-        }
-
-        setMyPlaces(places);
-      } catch (err) {
-        setError("Impossible de charger les lieux.");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchObservations();
-  }, [user]);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="account-list-page">
         <h1>Mes lieux</h1>
-        <p>Chargement...</p>
+        <Loading message="Chargement de vos lieux..." />
       </div>
     );
   }
@@ -64,7 +31,7 @@ export default function PlacesPage() {
     return (
       <div className="account-list-page">
         <h1>Mes lieux</h1>
-        <p>{error}</p>
+        <Error message={error} />
       </div>
     );
   }
@@ -73,25 +40,27 @@ export default function PlacesPage() {
     return (
       <div className="account-list-page">
         <h1>Mes lieux</h1>
-        <p>Vous n'avez pas encore effectué d'écoute dans un lieu.</p>
+        <EmptyState
+          title="Aucun lieu"
+          message="Vous n'avez pas encore effectué d'écoute dans un lieu."
+        />
       </div>
-    );
-  }
-
-  const items = [];
-  for (let i = 0; i < myPlaces.length; i++) {
-    const place = myPlaces[i];
-    items.push(
-      <li key={place.locationId}>
-        <Link to={`/locations/${place.locationId}`}>{place.locationName}</Link>
-      </li>,
     );
   }
 
   return (
     <div className="account-list-page">
       <h1>Mes lieux</h1>
-      <ul>{items}</ul>
+
+      <ul>
+        {myPlaces.map((place) => (
+          <li key={place.locationId}>
+            <Link to={`/locations/${place.locationId}`}>
+              {place.locationName}
+            </Link>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

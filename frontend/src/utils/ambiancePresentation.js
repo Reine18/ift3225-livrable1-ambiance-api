@@ -39,3 +39,20 @@ export const ambiancePresentation = {
 export function getAmbiancePresentation(classification) {
   return ambiancePresentation[classification] ?? ambiancePresentation.stale;
 }
+
+export function normalizeClassification(ambianceLevel) {
+  switch (ambianceLevel) {
+    case "calm":
+      return "calm";
+
+    case "normal":
+      return "moderate";
+
+    case "busy":
+    case "noisy":
+      return "animated";
+
+    default:
+      return "stale";
+  }
+}

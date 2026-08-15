@@ -48,3 +48,38 @@ export function getFreshness(updatedAt) {
     label: `Mise à jour il y a ${hours} h`,
   };
 }
+
+export function formatUpdatedAt(updatedAt) {
+  if (!updatedAt) {
+    return "Aucune mise à jour disponible";
+  }
+
+  const updatedDate = new Date(updatedAt);
+
+  if (Number.isNaN(updatedDate.getTime())) {
+    return "Date de mise à jour indisponible";
+  }
+
+  const differenceMinutes = Math.max(
+    0,
+    Math.floor((Date.now() - updatedDate.getTime()) / 60000)
+  );
+
+  if (differenceMinutes < 1) {
+    return "Mise à jour à l’instant";
+  }
+
+  if (differenceMinutes < 60) {
+    return `Mise à jour il y a ${differenceMinutes} min`;
+  }
+
+  const differenceHours = Math.floor(differenceMinutes / 60);
+
+  if (differenceHours < 24) {
+    return `Mise à jour il y a ${differenceHours} h`;
+  }
+
+  const differenceDays = Math.floor(differenceHours / 24);
+
+  return `Mise à jour il y a ${differenceDays} j`;
+}
