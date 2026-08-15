@@ -4,7 +4,7 @@ import Layout from "./components/layout/Layout";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import AuthPage from "./components/auth/authPage";
 import ObservationForm from "./components/observation/ObservationForm";
-import FavoritesPage from "./pages/FavoritesPage";
+import FavoritesPage from "./pages/favoritesPage";
 import PlacesPage from "./pages/PlacesPage";
 import ContributionsPage from "./pages/ContributionsPage";
 import RecommendationPage from "./pages/RecommendationPage";
