@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
 import { getObservations } from "../services/observationService";
+import { getLocations } from "../services/locationsService";
 
 import Loading from "../components/feedback/Loading";
 import Error from "../components/feedback/Error";
@@ -25,6 +26,7 @@ export default function ContributionsPage() {
 
         const allObservations =
           await getObservations();
+        const locations = await getLocations();
 
         const filtered = [];
 
@@ -41,20 +43,23 @@ export default function ContributionsPage() {
               : obs.author;
 
           if (authorId === user?.id) {
-            let locId = obs.location;
             let locName = obs.location;
 
-            if (obs.locationId) {
-              if (
-                typeof obs.locationId === "object"
-              ) {
-                locId = obs.locationId._id;
-                locName =
-                  obs.locationId.name ??
-                  obs.location;
-              } else {
-                locId = obs.locationId;
-              }
+            const matchingLocation = locations.find((loc) =>
+              loc._id === obs.locationId ||
+              loc.idlocation === obs.locationId ||
+              loc.name === obs.location ||
+              loc.idlocation === obs.location
+            );
+
+            const locId =
+              matchingLocation?.idlocation ??
+              matchingLocation?._id ??
+              obs.locationId ??
+              obs.location;
+
+            if (matchingLocation?.name) {
+              locName = matchingLocation.name;
             }
 
             filtered.push({
