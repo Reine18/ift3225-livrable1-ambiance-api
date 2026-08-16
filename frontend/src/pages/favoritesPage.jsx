@@ -86,7 +86,7 @@ export default function FavoritesPage() {
       <ul>
         {favorites.map((loc) => (
           <li key={loc._id || loc.idlocation}>
-            <Link to={`/locations/${loc._id || loc.idlocation}`}>
+            <Link to={`/locations/${loc.idlocation || loc._id}`}>
               {loc.name}
             </Link>
           </li>
