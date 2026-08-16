@@ -15,25 +15,35 @@ export default function RegisterForm({ onSwitchToLogin }) {
   const [error, setError] = useState("");
 
   async function handleSubmit(e) {
-    e.preventDefault();
-    setError("");
+  e.preventDefault();
+  setError("");
 
-    if (!name || !email || !password || !confirmPassword) {
-      setError("Tous les champs sont requis.");
-      return;
-    }
+  if (!name || !email || !password || !confirmPassword) {
+    setError("Tous les champs sont requis.");
+    return;
+  }
 
-    if (password !== confirmPassword) {
-      setError("Les mots de passe ne correspondent pas.");
-      return;
-    }
+  if (password !== confirmPassword) {
+    setError("Les mots de passe ne correspondent pas.");
+    return;
+  }
 
-    try {
-      await register({ name, email, password });
-    } catch (err) {
-      setError("Inscription impossible. Réessaie plus tard.");
+  try {
+    await register({ name, email, password });
+  } catch (err) {
+    if (
+      err.message === "Email already exists" ||
+      err.message === "Email already in use"
+    ) {
+      setError("Cette adresse courriel est déjà utilisée.");
+    } else {
+      setError(
+        err.message ||
+        "Inscription impossible. Réessaie plus tard."
+      );
     }
   }
+}
 
   return (
   <div className="auth-page-wrapper">
