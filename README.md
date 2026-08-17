@@ -102,6 +102,7 @@ npm install
 cp .env.example .env
 ```
 
+
 ### Variables d’environnement
 
 ```env
@@ -116,6 +117,12 @@ npm run dev
 ```
 
 ---
+
+## Déploiement
+
+Le backend de l'application est déployé sur Render et est accessible à l'adresse suivante :
+
+https://ift3225-livrable1-ambiance-api-1.onrender.com
 
 # Variables d’environnement
 
